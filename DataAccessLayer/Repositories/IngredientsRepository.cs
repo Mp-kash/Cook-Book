@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DataAccessLayer.Interfaces;
+using DomainModels.Models;
+using Microsoft.Data.SqlClient;
+using Dapper;
+
+namespace DataAccessLayer.Repositories
+{
+    public class IngredientsRepository : IIngredientsRepository
+    {
+        public List<Ingredient> GetIngredients()
+        {
+            string query = "select * from Fridge_Ingredients";
+
+            // Installed Microsoft.Data.SqlClient package which allows the app to connect to SqlServer
+            using(IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
+            {
+               // Added dapper in order to map the query results to C# object
+                return connection.Query<Ingredient>(query).ToList();
+            }
+        }
+
+        public void InsertIngredients(Ingredient ingredient)
+        {
+            string query = @"insert into Fridge_Ingredients(Name, Type,     Weight, KcalPer100g, PricePer100g) 
+              values (@Name, @Type, @Weight, @KcalPer100g, @PricePer100g)";
+
+            using(IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
+            {
+                connection.Execute(query, ingredient);
+            }
+        }
+    }
+}

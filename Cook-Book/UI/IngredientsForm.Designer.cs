@@ -1,4 +1,4 @@
-﻿namespace Cook_Book
+﻿namespace Cook_Book.UI
 {
     partial class IngredientsForm
     {
@@ -117,13 +117,17 @@
             // WeightNum
             // 
             WeightNum.Location = new Point(934, 227);
+            WeightNum.Maximum = new decimal(new int[] { 99999, 0, 0, 0 });
+            WeightNum.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             WeightNum.Name = "WeightNum";
             WeightNum.Size = new Size(249, 39);
             WeightNum.TabIndex = 8;
+            WeightNum.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // KcalPer100gNum
             // 
             KcalPer100gNum.Location = new Point(934, 314);
+            KcalPer100gNum.Maximum = new decimal(new int[] { 905, 0, 0, 0 });
             KcalPer100gNum.Name = "KcalPer100gNum";
             KcalPer100gNum.Size = new Size(249, 39);
             KcalPer100gNum.TabIndex = 9;
@@ -131,6 +135,7 @@
             // PricePer100gNum
             // 
             PricePer100gNum.Location = new Point(934, 393);
+            PricePer100gNum.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
             PricePer100gNum.Name = "PricePer100gNum";
             PricePer100gNum.Size = new Size(249, 39);
             PricePer100gNum.TabIndex = 10;

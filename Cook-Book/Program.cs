@@ -1,4 +1,7 @@
-namespace Cook_Book
+using DataAccessLayer.Interfaces;
+using DataAccessLayer.Repositories;
+
+namespace Cook_Book.UI
 {
     internal static class Program
     {
@@ -11,7 +14,10 @@ namespace Cook_Book
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new IngredientsForm());
+
+            IIngredientsRepository ingredientsRepo = new IngredientsRepository();
+
+            Application.Run(new IngredientsForm(ingredientsRepo));
         }
     }
 }
