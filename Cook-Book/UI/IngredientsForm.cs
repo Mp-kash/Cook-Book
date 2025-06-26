@@ -12,6 +12,7 @@ namespace Cook_Book.UI
 
         // This will cache the Ingredients from the db to avoid unncessary requests
         private List<Ingredient> _ingredients = new();
+        private List<Ingredient> _matchingIngredients = new();
         private string _currentSort = "None";
 
         public IngredientsForm(IIngredientsRepository ingredientsRepository)
@@ -25,7 +26,7 @@ namespace Cook_Book.UI
         {
             _ingredients = await _ingredientsRepository.GetIngredients();
             SortByComboBox();
-            RefreshGrid();
+            SearchAndRefreshResult();
             CustomizeGridAppearance();
         }
 
@@ -43,8 +44,8 @@ namespace Cook_Book.UI
             // Update the cached ingredient
             _ingredients = await _ingredientsRepository.GetIngredients();
 
-            RefreshGrid();
-            ClearAllFields();
+            SearchAndRefreshResult();
+            ClearInputFields();
         }
 
         private void CustomizeGridAppearance()
@@ -66,12 +67,14 @@ namespace Cook_Book.UI
             IngredientsDataGrid.Columns.AddRange(column);
         }
 
-        private void RefreshGrid()
+        private void ClearInputFields()
         {
-            IngredientsDataGrid.DataSource = null;
-            IngredientsDataGrid.DataSource = _ingredients;
+            TypeTxt.Text = string.Empty;
+            NameTxt.Text = string.Empty;
+            WeightNum.Value = 1;
+            KcalPer100gNum.Value = 0;
+            PricePer100gNum.Value = 0;
         }
-
         private void ClearAllFields()
         {
             TypeTxt.Text = string.Empty;
@@ -114,15 +117,29 @@ namespace Cook_Book.UI
             int lengthAfterPause = SearchTxt.Text.Length;
 
             if (lengthBeforePause == lengthAfterPause)
-                SearchResult();
+                SearchAndRefreshResult();
         }
 
-        private void SearchResult()
+        private void SearchAndRefreshResult()
         {
-            List<Ingredient> matchingIngredients = _ingredients.Where(i => i.Name.ToLower().Contains(SearchTxt.Text.ToLower())).ToList();
+            string searchIngredient = SearchTxt.Text.Trim().ToLower();
+            if (string.IsNullOrEmpty(searchIngredient))
+                _matchingIngredients = _ingredients;
+            else 
+                _matchingIngredients = _ingredients.Where(i => i.Name.ToLower().Contains(searchIngredient)).ToList();
+
+            _matchingIngredients = _currentSort switch
+            {
+                "Name" => _matchingIngredients.OrderBy(i => i.Name).ToList(),
+                "Price" => _matchingIngredients.OrderBy(i => i.PricePer100g).ThenBy(i => i.Name).ToList(),
+                "Type" => _matchingIngredients.OrderBy(i => i.Type).ThenBy(i => i.Name).ToList(),
+                "Weight" => _matchingIngredients.OrderBy(i => i.Weight).ThenBy(i => i.Name).ToList(),
+                "Kcal" => _matchingIngredients.OrderBy(i => i.KcalPer100g).ThenBy(i => i.Name).ToList(),
+                "None" or _ => _matchingIngredients
+            };
 
             IngredientsDataGrid.DataSource = null;
-            IngredientsDataGrid.DataSource = matchingIngredients;
+            IngredientsDataGrid.DataSource = _matchingIngredients;
         }
 
         private void SortByComboBox()
@@ -144,17 +161,7 @@ namespace Cook_Book.UI
         {
             _currentSort = SortByCbx.SelectedItem?.ToString() ?? "None";
 
-            _ingredients = _currentSort switch
-            {
-                "Name" => _ingredients.OrderBy(i => i.Name).ToList(),
-                "Price" => _ingredients.OrderBy(i => i.PricePer100g).ThenBy(i=>i.Name).ToList(),
-                "Type" => _ingredients.OrderBy(i => i.Type).ThenBy(i=>i.Name).ToList(),
-                "Weight" => _ingredients.OrderBy(i => i.Weight).ThenBy(i => i.Name).ToList(),
-                "Kcal" => _ingredients.OrderBy(i => i.KcalPer100g).ThenBy(i => i.Name).ToList(),
-                "None" or _ => _ingredients
-            };
-
-            RefreshGrid();
+            SearchAndRefreshResult();
         }
     }
 }

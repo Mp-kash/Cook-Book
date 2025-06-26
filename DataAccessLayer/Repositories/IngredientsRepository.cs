@@ -13,10 +13,14 @@ namespace DataAccessLayer.Repositories
 {
     public class IngredientsRepository : IIngredientsRepository
     {
-        public async Task<List<Ingredient>> GetIngredients()
+        public async Task<List<Ingredient>> GetIngredients(string? searchTxt = null)
         {
             string query = @"waitfor delay '00:00:00.700' 
                     select * from Fridge_Ingredients";
+            if (!string.IsNullOrEmpty(searchTxt))
+            {
+                query += $"where name like '%{searchTxt}%'";
+            }
 
             // Installed Microsoft.Data.SqlClient package which allows the app to connect to SqlServer
             using(IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))

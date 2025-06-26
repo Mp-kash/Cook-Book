@@ -171,6 +171,7 @@
             // 
             SearchTxt.Location = new Point(12, 12);
             SearchTxt.Name = "SearchTxt";
+            SearchTxt.PlaceholderText = "Search...";
             SearchTxt.Size = new Size(456, 39);
             SearchTxt.TabIndex = 13;
             SearchTxt.TextChanged += SearchTxt_TextChanged;
