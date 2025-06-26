@@ -13,26 +13,28 @@ namespace DataAccessLayer.Repositories
 {
     public class IngredientsRepository : IIngredientsRepository
     {
-        public List<Ingredient> GetIngredients()
+        public async Task<List<Ingredient>> GetIngredients()
         {
-            string query = "select * from Fridge_Ingredients";
+            string query = @"waitfor delay '00:00:00.700' 
+                    select * from Fridge_Ingredients";
 
             // Installed Microsoft.Data.SqlClient package which allows the app to connect to SqlServer
             using(IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
             {
                // Added dapper in order to map the query results to C# object
-                return connection.Query<Ingredient>(query).ToList();
+                return (await connection.QueryAsync<Ingredient>(query)).ToList();
             }
         }
 
-        public void InsertIngredients(Ingredient ingredient)
+        public async Task InsertIngredients(Ingredient ingredient)
         {
-            string query = @"insert into Fridge_Ingredients(Name, Type,     Weight, KcalPer100g, PricePer100g) 
+            string query = @"waitfor delay '00:00:00.700' 
+                insert into Fridge_Ingredients(Name, Type, Weight, KcalPer100g, PricePer100g) 
               values (@Name, @Type, @Weight, @KcalPer100g, @PricePer100g)";
 
             using(IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
             {
-                connection.Execute(query, ingredient);
+                await connection.ExecuteAsync(query, ingredient);
             }
         }
     }

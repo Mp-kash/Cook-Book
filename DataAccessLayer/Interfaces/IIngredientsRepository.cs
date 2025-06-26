@@ -9,7 +9,7 @@ namespace DataAccessLayer.Interfaces
 {
     public interface IIngredientsRepository
     {
-        public List<Ingredient> GetIngredients();
-        public void InsertIngredients(Ingredient ingredient);
+        public Task<List<Ingredient>> GetIngredients();
+        public Task InsertIngredients(Ingredient ingredient);
     }
 }
