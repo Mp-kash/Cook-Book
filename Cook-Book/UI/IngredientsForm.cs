@@ -39,6 +39,8 @@ namespace Cook_Book.UI
             AddIngredientBtn.Enabled = false;
             await _ingredientsRepository.InsertIngredients(ingredients);
             AddIngredientBtn.Enabled = true;
+
+            // Update the cached ingredient
             _ingredients = await _ingredientsRepository.GetIngredients();
 
             RefreshGrid();
@@ -59,6 +61,7 @@ namespace Cook_Book.UI
             column[4] = new DataGridViewTextBoxColumn() { DataPropertyName = "KcalPer100g", HeaderText = "Kcal (100g)" };
             column[5] = new DataGridViewTextBoxColumn() { DataPropertyName = "PricePer100g", HeaderText = "Price (100g)" };
 
+            IngredientsDataGrid.RowHeadersVisible = false;
             IngredientsDataGrid.Columns.Clear();
             IngredientsDataGrid.Columns.AddRange(column);
         }
@@ -145,9 +148,9 @@ namespace Cook_Book.UI
             {
                 "Name" => _ingredients.OrderBy(i => i.Name).ToList(),
                 "Price" => _ingredients.OrderBy(i => i.PricePer100g).ThenBy(i=>i.Name).ToList(),
-                "Type" => _ingredients.OrderBy(i => i.Type).ToList(),
-                "Weight" => _ingredients.OrderBy(i => i.Weight).ToList(),
-                "Kcal" => _ingredients.OrderBy(i => i.KcalPer100g).ToList(),
+                "Type" => _ingredients.OrderBy(i => i.Type).ThenBy(i=>i.Name).ToList(),
+                "Weight" => _ingredients.OrderBy(i => i.Weight).ThenBy(i => i.Name).ToList(),
+                "Kcal" => _ingredients.OrderBy(i => i.KcalPer100g).ThenBy(i => i.Name).ToList(),
                 "None" or _ => _ingredients
             };
 
