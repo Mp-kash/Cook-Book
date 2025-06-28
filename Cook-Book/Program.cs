@@ -1,5 +1,7 @@
+using System.Configuration;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cook_Book.UI
 {
@@ -15,9 +17,24 @@ namespace Cook_Book.UI
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            IIngredientsRepository ingredientsRepo = new IngredientsRepository();
+            ServiceCollection services = new ServiceCollection();
 
-            Application.Run(new IngredientsForm(ingredientsRepo));
+            // Register dependencies based on config
+            if (ConfigurationManager.AppSettings["CurrentRepo"] == "txt")
+                services.AddTransient<IIngredientsRepository, IngredientsTxtRepository>();
+            else
+                services.AddTransient<IIngredientsRepository, IngredientsRepository>();
+
+            // Register the form itself
+            services.AddTransient<IngredientsForm>();
+
+            // Build provider
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            // Get form from DI container
+            var form = serviceProvider.GetRequiredService<IngredientsForm>();
+
+            Application.Run(form);
         }
     }
 }
