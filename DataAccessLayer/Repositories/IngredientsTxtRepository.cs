@@ -58,6 +58,8 @@ namespace DataAccessLayer.Repositories
                         }
                         catch (Exception ex)
                         {
+                            string message = "Error occurred while getting an ingredient from '.txt' file: " + ex.Message;
+                            OnErrorOccurred(message);
                             continue;
                         }
                     }
