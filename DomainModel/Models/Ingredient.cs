@@ -16,13 +16,17 @@ namespace DomainModels.Models
         public decimal PricePer100g { get; set; }
 
         public Ingredient() { }
-        public Ingredient(string name, string type, decimal weight, decimal kcal, decimal price) 
+        public Ingredient(string name, string type, decimal weight, decimal kcal, decimal price, int? id = null)
         {
             Name = name;
             Type = type;
             Weight = weight;
             KcalPer100g = kcal;
             PricePer100g = price;
-        }
+            if (id != null)
+            {
+                Id = (int)id;
+            }
+        }    
     }
 }

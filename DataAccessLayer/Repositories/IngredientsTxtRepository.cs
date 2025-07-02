@@ -9,11 +9,15 @@ using DomainModels.Models;
 
 namespace DataAccessLayer.Repositories
 {
-    public class IngredientsTxtRepository : IIngredientsRepository
+    public class IngredientsTxtRepository :IIngredientsRepository
     {
         private readonly string _filePath;
-        private void OnErrorOccurred(string exMessage)
+
+        public event Action<string>? ErrorOccurred;
+
+        private void OnErrorOccurred(string exMessage, string errorMessage)
         {
+            ErrorOccurred?.Invoke(errorMessage);
             Logger.Log(exMessage, DateTime.Now);  
         }
 
@@ -58,16 +62,18 @@ namespace DataAccessLayer.Repositories
                         }
                         catch (Exception ex)
                         {
-                            string message = "Error occurred while getting an ingredient from '.txt' file: " + ex.Message;
-                            OnErrorOccurred(message);
+                            string exMessage = "Error occurred while getting an ingredient from '.txt' file: " + ex.Message;
+                            string message = "Error occurred while parsing ingredient data from the file.";
+                            OnErrorOccurred(exMessage, message);
                             continue;
                         }
                     }
                 }
             } catch (Exception ex)
             {
-                string message = "Error occurred while getting ingredients from '.txt' file: " + ex.Message;
-                OnErrorOccurred(message);
+                string errorMessage = "Error occurred while getting ingredients from '.txt' file: " + ex.Message;
+                string message = "Error occurred while reading ingredients from the file.";
+                OnErrorOccurred(errorMessage, message);
             }
             return ingredients;
         }
@@ -85,11 +91,103 @@ namespace DataAccessLayer.Repositories
             catch (Exception ex)
             {
                 string exMessage = "Error occurred while inserting ingredients in '.txt' file: " + ex.Message;
-                OnErrorOccurred(exMessage);
+                string message = "Error occurred while inserting ingredient into the file.";
+                OnErrorOccurred(exMessage, message);
             }
             
         }
 
-        
+        public async Task UpdateIngredients(Ingredient ingredient)
+        {
+            try
+            {
+                List<Ingredient> ingredients = await GetIngredients();
+
+                // Using LINQ expression to find ingredient to update
+                Ingredient? ingredientToUpdate = ingredients.FirstOrDefault(i => i.Id == ingredient.Id);
+
+                if (ingredientToUpdate == null)
+                {
+                    string exMessage = $"IngredientToUpdate with Id {ingredient.Id} not found!";
+                    string message = $"Ingredient {ingredient.Name} not found.";
+                    OnErrorOccurred(exMessage, message);
+                }
+                else
+                {
+                    // Update the original object instead of using new which creates a new object
+                    ingredientToUpdate.Name = ingredient.Name;
+                    ingredientToUpdate.Type = ingredient.Type;
+                    ingredientToUpdate.Weight = ingredient.Weight;
+                    ingredientToUpdate.KcalPer100g = ingredient.KcalPer100g;
+                    ingredientToUpdate.PricePer100g = ingredient.PricePer100g;
+                }
+
+                // Write ingredients back to file
+                WriteAllIngredients(ingredients);
+            } 
+            catch (Exception ex)
+            {
+                string exMessage = "Error occurred while updating ingredient in the .txt file: " + ex.Message;
+                string message = "Error occurred while updating ingredient in the file.";
+                OnErrorOccurred(exMessage, message);
+            }
+        }
+
+        private void WriteAllIngredients(List<Ingredient> ingredients)
+        {
+            try
+            {
+                // Write a temporary file
+                string tempFilePath = Path.GetTempFileName();
+
+                using (StreamWriter sw = new StreamWriter(tempFilePath))
+                {
+                    ingredients.ForEach(async i =>
+                    {
+                        await sw.WriteLineAsync($"{i.Id}|{i.Name}|{i.Type}|{i.Weight}|{i.KcalPer100g}|{i.PricePer100g}");
+                    });
+                }
+
+                // Delete the previous file and re-write it with the temp
+                File.Delete(_filePath);
+                File.Move(tempFilePath, _filePath);
+            }
+            catch (Exception ex)
+            {
+                string exMessage = "Error occurred while writing ingredients to '.txt' file: "+ex.Message;
+                string message = "Error occurred while saving ingredients to the file.";
+                OnErrorOccurred(exMessage, message);
+            }
+        }
+
+        public async Task DeleteIngredients(Ingredient ingredient)
+        {
+            try
+            {
+                List<Ingredient> ingredients = await GetIngredients();
+
+                Ingredient? ingredientToRemove = ingredients.FirstOrDefault(i => i.Id == ingredient.Id);
+
+                if (ingredientToRemove == null)
+                {
+                    string exMessage = $"IngredientToRemove with Id {ingredient.Id} not found!";
+                    string message = $"Ingredient {ingredient.Name} not found.";
+                    OnErrorOccurred(exMessage, message);
+                }
+                else
+                {
+                    ingredients.Remove(ingredientToRemove);
+                }
+
+                // Write ingredients back to the file.
+                WriteAllIngredients(ingredients);
+            }
+            catch(Exception ex)
+            {
+                string exMessage = "Error occurred while deleting ingredient from the .txt file: " + ex.Message;
+                string message = "Error occurred while deleting ingredient from the file.";
+                OnErrorOccurred(exMessage, message);
+            }
+        }
     }
 }

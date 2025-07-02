@@ -44,6 +44,7 @@
             SearchTxt = new TextBox();
             label6 = new Label();
             SortByCbx = new ComboBox();
+            EditIngredientsBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)IngredientsDataGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)WeightNum).BeginInit();
             ((System.ComponentModel.ISupportInitialize)KcalPer100gNum).BeginInit();
@@ -56,13 +57,14 @@
             IngredientsDataGrid.Location = new Point(12, 64);
             IngredientsDataGrid.Name = "IngredientsDataGrid";
             IngredientsDataGrid.RowHeadersWidth = 62;
-            IngredientsDataGrid.Size = new Size(754, 519);
+            IngredientsDataGrid.Size = new Size(889, 519);
             IngredientsDataGrid.TabIndex = 0;
+            IngredientsDataGrid.CellClick += IngredientsDataGrid_CellClick;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(792, 64);
+            label1.Location = new Point(923, 64);
             label1.Name = "label1";
             label1.Size = new Size(83, 32);
             label1.TabIndex = 1;
@@ -71,7 +73,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(797, 147);
+            label2.Location = new Point(928, 147);
             label2.Name = "label2";
             label2.Size = new Size(70, 32);
             label2.TabIndex = 2;
@@ -80,7 +82,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(792, 234);
+            label3.Location = new Point(923, 234);
             label3.Name = "label3";
             label3.Size = new Size(95, 32);
             label3.TabIndex = 3;
@@ -89,7 +91,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(792, 316);
+            label4.Location = new Point(923, 316);
             label4.Name = "label4";
             label4.Size = new Size(136, 32);
             label4.TabIndex = 4;
@@ -98,7 +100,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(792, 393);
+            label5.Location = new Point(923, 393);
             label5.Name = "label5";
             label5.Size = new Size(144, 32);
             label5.TabIndex = 5;
@@ -106,14 +108,14 @@
             // 
             // NameTxt
             // 
-            NameTxt.Location = new Point(934, 57);
+            NameTxt.Location = new Point(1065, 57);
             NameTxt.Name = "NameTxt";
             NameTxt.Size = new Size(249, 39);
             NameTxt.TabIndex = 6;
             // 
             // TypeTxt
             // 
-            TypeTxt.Location = new Point(934, 140);
+            TypeTxt.Location = new Point(1065, 140);
             TypeTxt.Name = "TypeTxt";
             TypeTxt.Size = new Size(249, 39);
             TypeTxt.TabIndex = 7;
@@ -121,7 +123,7 @@
             // WeightNum
             // 
             WeightNum.DecimalPlaces = 2;
-            WeightNum.Location = new Point(934, 227);
+            WeightNum.Location = new Point(1065, 227);
             WeightNum.Maximum = new decimal(new int[] { 99999, 0, 0, 0 });
             WeightNum.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             WeightNum.Name = "WeightNum";
@@ -132,7 +134,7 @@
             // KcalPer100gNum
             // 
             KcalPer100gNum.DecimalPlaces = 2;
-            KcalPer100gNum.Location = new Point(934, 314);
+            KcalPer100gNum.Location = new Point(1065, 314);
             KcalPer100gNum.Maximum = new decimal(new int[] { 905, 0, 0, 0 });
             KcalPer100gNum.Name = "KcalPer100gNum";
             KcalPer100gNum.Size = new Size(249, 39);
@@ -141,7 +143,7 @@
             // PricePer100gNum
             // 
             PricePer100gNum.DecimalPlaces = 2;
-            PricePer100gNum.Location = new Point(934, 393);
+            PricePer100gNum.Location = new Point(1065, 393);
             PricePer100gNum.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
             PricePer100gNum.Name = "PricePer100gNum";
             PricePer100gNum.Size = new Size(249, 39);
@@ -149,7 +151,7 @@
             // 
             // AddIngredientBtn
             // 
-            AddIngredientBtn.Location = new Point(797, 463);
+            AddIngredientBtn.Location = new Point(928, 463);
             AddIngredientBtn.Name = "AddIngredientBtn";
             AddIngredientBtn.Size = new Size(386, 54);
             AddIngredientBtn.TabIndex = 11;
@@ -159,7 +161,7 @@
             // 
             // ClearAllFieldsBtn
             // 
-            ClearAllFieldsBtn.Location = new Point(797, 533);
+            ClearAllFieldsBtn.Location = new Point(928, 533);
             ClearAllFieldsBtn.Name = "ClearAllFieldsBtn";
             ClearAllFieldsBtn.Size = new Size(386, 50);
             ClearAllFieldsBtn.TabIndex = 12;
@@ -195,11 +197,22 @@
             SortByCbx.TabIndex = 15;
             SortByCbx.SelectedIndexChanged += SortByCbx_SelectedIndexChanged;
             // 
+            // EditIngredientsBtn
+            // 
+            EditIngredientsBtn.Location = new Point(928, 463);
+            EditIngredientsBtn.Name = "EditIngredientsBtn";
+            EditIngredientsBtn.Size = new Size(386, 54);
+            EditIngredientsBtn.TabIndex = 16;
+            EditIngredientsBtn.Text = "Edit Ingredients";
+            EditIngredientsBtn.UseVisualStyleBackColor = true;
+            EditIngredientsBtn.Click += EditIngredientsBtn_Click;
+            // 
             // IngredientsForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1204, 595);
+            ClientSize = new Size(1326, 595);
+            Controls.Add(EditIngredientsBtn);
             Controls.Add(SortByCbx);
             Controls.Add(label6);
             Controls.Add(SearchTxt);
@@ -247,5 +260,6 @@
         private TextBox SearchTxt;
         private Label label6;
         private ComboBox SortByCbx;
+        private Button EditIngredientsBtn;
     }
 }

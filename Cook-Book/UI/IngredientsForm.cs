@@ -16,15 +16,23 @@ namespace Cook_Book.UI
         private List<Ingredient> _matchingIngredients = new();
         private string _currentSort = "None";
 
+        private int _ingredientToEditId = 0;
+
         public IngredientsForm(IIngredientsRepository ingredientsRepository)
         {
             InitializeComponent();
 
             _ingredientsRepository = ingredientsRepository;
+
+            // Used Lamda expression to subsribe to the error.
+            _ingredientsRepository.ErrorOccurred += exMessage =>
+                MessageBox.Show(exMessage, "Error");
         }
 
         private async void IngredientsForm_Load(object sender, EventArgs e)
         {
+            EditIngredientsBtn.Visible = false;
+            AddIngredientBtn.Visible = true;
             _ingredients = await _ingredientsRepository.GetIngredients();
             SortByComboBox();
             SearchAndRefreshResult();
@@ -55,7 +63,7 @@ namespace Cook_Book.UI
 
             IngredientsDataGrid.AutoGenerateColumns = false;
 
-            DataGridViewColumn[] column = new DataGridViewColumn[6];
+            DataGridViewColumn[] column = new DataGridViewColumn[8];
             column[0] = new DataGridViewTextBoxColumn() { DataPropertyName = "Id", Visible = false };
             column[1] = new DataGridViewTextBoxColumn() { DataPropertyName = "Name", HeaderText = "Name" };
             column[2] = new DataGridViewTextBoxColumn() { DataPropertyName = "Type", HeaderText = "Type" };
@@ -63,9 +71,88 @@ namespace Cook_Book.UI
             column[4] = new DataGridViewTextBoxColumn() { DataPropertyName = "KcalPer100g", HeaderText = "Kcal (100g)" };
             column[5] = new DataGridViewTextBoxColumn() { DataPropertyName = "PricePer100g", HeaderText = "Price (100g)" };
 
+            // Edit button column
+            column[6] = new DataGridViewButtonColumn()
+            {
+                HeaderText = "",
+                Name = "EditBtn",
+                Text = "Edit",
+                UseColumnTextForButtonValue = true
+            };
+
+            // Delete button column
+            column[7] = new DataGridViewButtonColumn()
+            {
+                HeaderText = "",
+                Name = "DeleteBtn",
+                Text = "Delete",
+                UseColumnTextForButtonValue = true
+            };
+
             IngredientsDataGrid.RowHeadersVisible = false;
             IngredientsDataGrid.Columns.Clear();
             IngredientsDataGrid.Columns.AddRange(column);
+        }
+
+        private async void IngredientsDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+                return;
+
+            Ingredient clickedData = (Ingredient)IngredientsDataGrid.Rows[e.RowIndex].DataBoundItem;
+            if(e.RowIndex >= 0 && e.ColumnIndex == IngredientsDataGrid.Columns["DeleteBtn"].Index)
+            {
+                // Guard clause
+                var result = MessageBox.Show("Are you sure you want to delete ingredient", "Delete Ingredient", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    await _ingredientsRepository.DeleteIngredients(clickedData);
+                    _ingredients = await _ingredientsRepository.GetIngredients();
+                    SearchAndRefreshResult();
+                    if(_ingredientToEditId == clickedData.Id)
+                    {
+                        ClearInputFields();                       
+                    }
+                }
+            }
+
+            if (e.RowIndex >= 0 && e.ColumnIndex == IngredientsDataGrid.Columns["EditBtn"].Index)
+                fillFormEdit(clickedData);          
+        }
+
+        private void fillFormEdit(Ingredient clickedData)
+        {
+            _ingredientToEditId = clickedData.Id;
+
+            NameTxt.Text = clickedData.Name;
+            TypeTxt.Text = clickedData.Type;
+            WeightNum.Value = clickedData.Weight;
+            KcalPer100gNum.Value = clickedData.KcalPer100g;
+            PricePer100gNum.Value = clickedData.PricePer100g;
+
+            EditIngredientsBtn.Visible = true;
+            AddIngredientBtn.Visible = false;
+        }
+        private async void EditIngredientsBtn_Click(object sender, EventArgs e)
+        {
+            if (!isValid("ignore"))
+                return;
+
+            // Using a Constuctor instead of Object initializer
+            Ingredient ingeredientsToEdit = new Ingredient(NameTxt.Text, TypeTxt.Text,WeightNum.Value,KcalPer100gNum.Value,PricePer100gNum.Value, _ingredientToEditId);
+
+            EditIngredientsBtn.Enabled = false;
+            await _ingredientsRepository.UpdateIngredients(ingeredientsToEdit);
+         // Update the cached ingredient
+            _ingredients = await _ingredientsRepository.GetIngredients();
+            EditIngredientsBtn.Enabled = true;
+            EditIngredientsBtn.Visible = false;
+            AddIngredientBtn.Visible = true;
+
+
+            ClearInputFields();            
+            SearchAndRefreshResult();
+            _ingredientToEditId = 0;
         }
 
         private void ClearInputFields()
@@ -75,6 +162,10 @@ namespace Cook_Book.UI
             WeightNum.Value = 1;
             KcalPer100gNum.Value = 0;
             PricePer100gNum.Value = 0;
+
+            EditIngredientsBtn.Visible = false;
+            AddIngredientBtn.Visible = true;
+            _ingredientToEditId = 0;
         }
         private void ClearAllFields()
         {
@@ -84,16 +175,23 @@ namespace Cook_Book.UI
             KcalPer100gNum.Value = 0;
             PricePer100gNum.Value = 0;
             SearchTxt.Text = string.Empty;
+
+            EditIngredientsBtn.Visible = false;
+            AddIngredientBtn.Visible = true;
+            _ingredientToEditId = 0;
         }
 
-        private bool isValid()
+        private bool isValid(string? ignore = null)
         {
 
-            // Used LINQ Expression
-            if (_ingredients.Any(i => i.Name.ToLower() == NameTxt.Text.ToLower()))
+            if (ignore == null)
             {
-                MessageBox.Show("Ingredient with name exist", "Error");
-                return false;
+                // Used LINQ Expression
+                if (_ingredients.Any(i => i.Name.ToLower() == NameTxt.Text.ToLower()))
+                {
+                    MessageBox.Show("Ingredient with name exist.", "Error");
+                    return false;
+                }
             }
 
 
@@ -126,7 +224,7 @@ namespace Cook_Book.UI
             string searchIngredient = SearchTxt.Text.Trim().ToLower();
             if (string.IsNullOrEmpty(searchIngredient))
                 _matchingIngredients = _ingredients;
-            else 
+            else
                 _matchingIngredients = _ingredients.Where(i => i.Name.ToLower().Contains(searchIngredient)).ToList();
 
             _matchingIngredients = _currentSort switch
