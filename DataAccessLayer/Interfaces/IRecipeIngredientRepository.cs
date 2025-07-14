@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DataAccessLayer.CustomQueryResults;
+using DomainModel.Models;
+
+namespace DataAccessLayer.Interfaces
+{
+    public interface IRecipeIngredientRepository
+    {
+        public event Action<string>? ErrorOccurred;
+        public Task<List<RecipeIngredientWithNameAndAmount>> GetRecipeIngredients(int recipeId);
+        public Task InsertRecipeIngredint(RecipeIngredient recipeIngredient);
+        public Task UpdateRecipeIngredient(RecipeIngredient recipeIngredient);
+        public Task DeleteRecipeIngredient(int recipeId, int ingredientId);
+    }
+}

@@ -25,14 +25,22 @@ namespace Cook_Book.UI
             else
                 services.AddTransient<IIngredientsRepository, IngredientsRepository>();
 
+            services.AddTransient<IRecipeRepository, RecipeRepository>();
+            services.AddTransient<IRecipeTypeRepository, RecipeTypeRepository>();
+            services.AddTransient<IRecipeIngredientRepository, RecipeIngredientRepository>();
+
             // Register the form itself
             services.AddTransient<IngredientsForm>();
+            services.AddTransient<RecipesForm>();
+            services.AddTransient<RecipeTypeForm>();
+            services.AddTransient<RecipeIngredientsForm>();
+            services.AddTransient<AmountsForm>();
 
             // Build provider
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
             // Get form from DI container
-            var form = serviceProvider.GetRequiredService<IngredientsForm>();
+            var form = serviceProvider.GetRequiredService<RecipesForm>();
 
             Application.Run(form);
         }

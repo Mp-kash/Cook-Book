@@ -111,7 +111,8 @@ namespace Cook_Book.UI
                     SearchAndRefreshResult();
                     if(_ingredientToEditId == clickedData.Id)
                     {
-                        ClearInputFields();                       
+                        ClearInputFields();
+                        _ingredientToEditId = 0;// Reset the edit Id
                     }
                 }
             }
@@ -183,11 +184,11 @@ namespace Cook_Book.UI
 
         private bool isValid(string? ignore = null)
         {
-
+            // Short-cicuit evaluation to avoid unneccessary looping
             if (ignore == null)
             {
                 // Used LINQ Expression
-                if (_ingredients.Any(i => i.Name.ToLower() == NameTxt.Text.ToLower()))
+                if (_ingredients.Any(i => i.Name.ToLower() == NameTxt.Text.ToLower().Trim()))
                 {
                     MessageBox.Show("Ingredient with name exist.", "Error");
                     return false;
@@ -195,7 +196,7 @@ namespace Cook_Book.UI
             }
 
 
-            if (string.IsNullOrEmpty(NameTxt.Text) || string.IsNullOrEmpty(TypeTxt.Text) || PricePer100gNum.Value <= 0)
+            if (string.IsNullOrEmpty(NameTxt.Text.Trim()) || string.IsNullOrEmpty(TypeTxt.Text.Trim()) || PricePer100gNum.Value <= 0)
             {
                 MessageBox.Show("Please fill all fields", "Error");
                 return false;
