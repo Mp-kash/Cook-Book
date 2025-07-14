@@ -62,6 +62,9 @@ namespace Cook_Book.UI
             RecipeTypeCbx.SelectedIndex = 0;
             _selectedImageBytes = null;
             ImageBox.Image = ImageHelper.placeHolderImage;
+
+            AddRecipeBtn.Visible = true;
+            EditRecipeBtn.Visible = false;
         }
 
         private void CustomizeGridAppearance()
@@ -145,7 +148,7 @@ namespace Cook_Book.UI
             _recipeToEditId = clickedData.Id;
             NameTxt.Text = clickedData.Name;
             DescriptionTxt.Text = clickedData.Description;
-            if(clickedData.Image != null)
+            if (clickedData.Image != null)
             {
                 ImageBox.Image = ImageHelper.ConvertFromDbImage(clickedData.Image);
                 _selectedImageBytes = clickedData.Image;
@@ -155,8 +158,8 @@ namespace Cook_Book.UI
                 ImageBox.Image = ImageHelper.placeHolderImage;
             }
 
-                // Used SelectedValue instead of SelectedIndex to set the correct RecipeType
-                RecipeTypeCbx.SelectedValue = clickedData.RecipeTypeId;
+            // Used SelectedValue instead of SelectedIndex to set the correct RecipeType
+            RecipeTypeCbx.SelectedValue = clickedData.RecipeTypeId;
 
             AddRecipeBtn.Visible = false;
             EditRecipeBtn.Visible = true;
@@ -211,7 +214,7 @@ namespace Cook_Book.UI
 
             int recipeTypeId = (int)RecipeTypeCbx.SelectedValue;
 
-            byte[]? image = _selectedImageBytes != null? _selectedImageBytes : null;
+            byte[]? image = _selectedImageBytes != null ? _selectedImageBytes : null;
             Recipe recipeToInsert = new Recipe(NameTxt.Text, DescriptionTxt.Text, image, recipeTypeId);
 
             AddRecipeBtn.Enabled = false;
@@ -333,6 +336,12 @@ namespace Cook_Book.UI
                     _selectedImageBytes = ImageHelper.ConvertToDbImage(selectedImagePath);
                 }
             }
+        }
+
+        private void removeImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ImageBox.Image = ImageHelper.placeHolderImage;
+            _selectedImageBytes = null; // Clear the selected image bytes
         }
     }
 }

@@ -76,10 +76,9 @@ namespace DataAccessLayer.Repositories
             {
                 string query = @"update Recipes
                     set Name = @Name,
-                    Description = @Description,"
-                    + (recipe.Image != null?  
-                    "Image = @Image," : "" )+
-                    @"RecipeTypeId = @RecipeTypeId
+                    Description = @Description, 
+                    Image = @Image,
+                    RecipeTypeId = @RecipeTypeId
                     where Id = @Id";
 
                 using (IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
@@ -97,12 +96,32 @@ namespace DataAccessLayer.Repositories
 
         public void DeleteRecipe(int recipeId)
         {
-            string query = @$"delete from Recipes
-                where id = {recipeId}";
-
-            using (IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
+            try
             {
-                connection.Execute(query);
+                string query = @$"delete from Recipes
+                    where id = {recipeId}";
+
+                using (IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
+                {
+                    connection.Execute(query);
+                }
+            }
+            catch (SqlException sqlEx) when (sqlEx.Number == 547) // Foreign key violation
+            {
+                string message = "To delete this recipe, you have to delete the related Ingredient(s) first.";
+                string exMessage = "An error occured while deleting recipe in SqlServer. " + sqlEx.Message;
+                OnErrorOccurred(message, exMessage);
+            }
+            catch (Exception ex)
+            {
+                if(ex is SqlException sqlEx)
+                {
+                    int number = sqlEx.Number;
+                    string messageex = sqlEx.Message;
+                }
+                string message = "An error occured while deleting recipe.";
+                string exMessage = "An error occured while deleting recipe in SqlServer. " + ex.Message;
+                OnErrorOccurred(message, exMessage);
             }
         }
     }

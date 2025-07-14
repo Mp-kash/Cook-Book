@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             RecipesGrid = new DataGridView();
             label1 = new Label();
             label2 = new Label();
@@ -36,6 +37,8 @@
             NameTxt = new TextBox();
             DescriptionTxt = new RichTextBox();
             ImageBox = new PictureBox();
+            ImageContextMenu = new ContextMenuStrip(components);
+            removeImageToolStripMenuItem = new ToolStripMenuItem();
             AddRecipeBtn = new Button();
             ClearAllFieldsBtn = new Button();
             AddRecipeTypeBtn = new Button();
@@ -44,6 +47,7 @@
             EditRecipeBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)RecipesGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ImageBox).BeginInit();
+            ImageContextMenu.SuspendLayout();
             SuspendLayout();
             // 
             // RecipesGrid
@@ -109,12 +113,28 @@
             // 
             // ImageBox
             // 
+            ImageBox.ContextMenuStrip = ImageContextMenu;
             ImageBox.Location = new Point(1046, 276);
             ImageBox.Name = "ImageBox";
             ImageBox.Size = new Size(315, 197);
             ImageBox.TabIndex = 8;
             ImageBox.TabStop = false;
             ImageBox.Click += ImageBox_Click;
+            // 
+            // ImageContextMenu
+            // 
+            ImageContextMenu.ImageScalingSize = new Size(24, 24);
+            ImageContextMenu.Items.AddRange(new ToolStripItem[] { removeImageToolStripMenuItem });
+            ImageContextMenu.Name = "ImageContextMenu";
+            ImageContextMenu.Size = new Size(204, 36);
+            ImageContextMenu.Text = "Remove Image";
+            // 
+            // removeImageToolStripMenuItem
+            // 
+            removeImageToolStripMenuItem.Name = "removeImageToolStripMenuItem";
+            removeImageToolStripMenuItem.Size = new Size(203, 32);
+            removeImageToolStripMenuItem.Text = "Remove Image";
+            removeImageToolStripMenuItem.Click += removeImageToolStripMenuItem_Click;
             // 
             // AddRecipeBtn
             // 
@@ -201,6 +221,7 @@
             Load += RecipesForm_Load;
             ((System.ComponentModel.ISupportInitialize)RecipesGrid).EndInit();
             ((System.ComponentModel.ISupportInitialize)ImageBox).EndInit();
+            ImageContextMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -221,5 +242,7 @@
         private ComboBox RecipeTypeCbx;
         private ComboBox RecipeFilterCbx;
         private Button EditRecipeBtn;
+        private ContextMenuStrip ImageContextMenu;
+        private ToolStripMenuItem removeImageToolStripMenuItem;
     }
 }
