@@ -14,6 +14,8 @@ namespace DomainModel.Models
         public decimal Amount { get; set; }
 
         // Constructor
+        public RecipeIngredient() { }
+
         public RecipeIngredient(int recipeId, int ingredientId, decimal amount)
         {
             RecipeId = recipeId;

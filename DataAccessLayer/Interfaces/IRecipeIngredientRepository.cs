@@ -15,5 +15,6 @@ namespace DataAccessLayer.Interfaces
         public Task InsertRecipeIngredint(RecipeIngredient recipeIngredient);
         public Task UpdateRecipeIngredient(RecipeIngredient recipeIngredient);
         public Task DeleteRecipeIngredient(int recipeId, int ingredientId);
+        public Task<List<RecipeIngredient>> GetAllRecipeIngredients();
     }
 }

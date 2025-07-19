@@ -14,6 +14,7 @@ namespace DomainModel.Models
         public byte[]? Image { get; set; }
         public int RecipeTypeId { get; set; }
     
+        public Recipe() { }
 
         public Recipe(string name, string description, byte[]? image, int recipeTypeId, int? id = null)
         {

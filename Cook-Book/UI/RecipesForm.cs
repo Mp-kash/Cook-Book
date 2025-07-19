@@ -33,9 +33,6 @@ namespace Cook_Book.UI
             _recipeRepository = recipeRepository;
             _recipeTypeRepository = recipeTypeRepository;
             _serviceProvider = serviceProvider;
-
-            _recipeRepository.ErrorOccurred += (message => MessageBox.Show(message, "Error"));
-            _recipeTypeRepository.ErrorOccurred += (message => MessageBox.Show(message, "Error"));
         }
 
         private async void RecipesForm_Load(object sender, EventArgs e)

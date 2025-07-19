@@ -39,8 +39,8 @@ namespace DataAccessLayer.Repositories
             }
             catch(Exception ex)
             {
-                string message = "An error occured while inserting recipes in the db.";
-                string exMessage = "An error occured while inserting recipes in SqlServer. " + ex.Message;
+                string message = "An error occured while getting recipes in the db.";
+                string exMessage = "An error occured while getting recipes in SqlServer. " + ex.Message;
                 OnErrorOccurred(message, exMessage);
 
                 return new List<RecipesWithTypes>();
@@ -123,6 +123,29 @@ namespace DataAccessLayer.Repositories
                 string exMessage = "An error occured while deleting recipe in SqlServer. " + ex.Message;
                 OnErrorOccurred(message, exMessage);
             }
+        }
+
+        public async Task<List<Recipe>> GetAllRecipes()
+        {
+            try
+            {
+                string query = @"waitfor delay '00:00:00.550'
+                    select * from Recipes ";
+
+                using (IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
+                {
+                    return (await connection.QueryAsync<Recipe>(query)).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = "An error occured while getting ALL recipes in the db.";
+                string exMessage = "An error occured while getting All recipes in SqlServer. " + ex.Message;
+                OnErrorOccurred(message, exMessage);
+
+                return new List<Recipe>();
+            }
+
         }
     }
 }

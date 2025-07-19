@@ -108,5 +108,27 @@ namespace DataAccessLayer.Repositories
                 OnErrorOccurred(message, exMessage);
             }
         }
+
+        public async Task<List<RecipeIngredient>> GetAllRecipeIngredients()
+        {
+            try
+            {
+                string query = $@"waitfor delay '00:00:00.300'
+                        select * from RecipeIngredients";
+
+                using (IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
+                {
+                    return (await connection.QueryAsync<RecipeIngredient>(query)).ToList();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = "Error occurred while getting All recipe ingredients.";
+                string exMessage = "Error occurred while getting All recipe ingredients from SqlServer: " + ex.Message;
+                OnErrorOccurred(message, exMessage);
+                return new List<RecipeIngredient>();
+            }
+        }
     }
 }

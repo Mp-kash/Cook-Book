@@ -131,6 +131,6 @@ namespace DataAccessLayer.Repositories
                 string message = "An error occurred while deleting ingredients from the database.";
                 OnErrorOccurred(exMessage, message);
             }
-        }
+        }       
     }
 }
