@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cook_Book.ViewModel;
 using DataAccessLayer.CustomQueryResults;
 using DataAccessLayer.Interfaces;
 using DomainModel.Models;
@@ -19,7 +20,9 @@ namespace Cook_Book
         private List<Ingredient> _ingredients = new();
         private List<Recipe> _recipes = new();
         private List<RecipeIngredient> _recipeIngredients = new();
-        private List<RecipeIngredientWithNameAndAmount> _recipeIngredientWithNameAndAmounts = new();
+
+        // Using a Dictionary
+        private Dictionary<int, string> _ingredientIdToNameMapper = new();
 
         public List<Recipe> AvailableRecipes = new();
         public List<Recipe> UnavilableRecipes = new();
@@ -41,15 +44,19 @@ namespace Cook_Book
         public async Task RefreshData()
         {
             _ingredients = await _ingredientsRepository.GetIngredients();
+            _ingredientIdToNameMapper = _ingredients.ToDictionary(i => i.Id, i => i.Name);
+
             _recipes = await _recipeRepository.GetAllRecipes();
             _recipeIngredients = await _recipeIngredientRepository.GetAllRecipeIngredients();
-            _recipeIngredientWithNameAndAmounts = await _recipeIngredientRepository.GetRecipeIngredients(0); // Assuming 0 is a placeholder for all recipes
 
             ClassifyRecipes();
         }
 
         public void ClassifyRecipes()
         {
+            AvailableRecipes.Clear();   // clear before adding
+             UnavilableRecipes.Clear(); // clear before adding
+
             var groupedRecipesAndIngredients = _recipeIngredients.GroupBy(ri => ri.RecipeId).ToList();
 
             foreach(var recipeGroup in groupedRecipesAndIngredients)
@@ -67,12 +74,47 @@ namespace Cook_Book
                     }
                 }
 
-                Recipe recipeToAdd = _recipes.FirstOrDefault(ri => ri.Id == recipeGroup.Key);
+                Recipe? recipeToAdd = _recipes.FirstOrDefault(ri => ri.Id == recipeGroup.Key);
                 if (isRecipeAvailable)
                     AvailableRecipes.Add(recipeToAdd);
                 else
                     UnavilableRecipes.Add(recipeToAdd);
             }
+        }
+
+        public List<RecipeIngredientExtendedVM> GetIngredients(int selectedRecipeId)
+        {
+            List<RecipeIngredientExtendedVM> ingredientsToReturn = new();
+
+            var selectedRecipeIngredients = _recipeIngredients.GroupBy(ri => ri.RecipeId).FirstOrDefault(ri => ri.Key == selectedRecipeId);
+
+            if (selectedRecipeIngredients == null)
+                return ingredientsToReturn;
+
+            foreach(var sri in selectedRecipeIngredients)
+            {
+                Ingredient? i = _ingredients.FirstOrDefault(i => i.Id == sri.IngredientId);
+
+                decimal missingAmount = Math.Max(0, sri.Amount - i.Weight);
+
+                ingredientsToReturn.Add(new RecipeIngredientExtendedVM(i.Name, i.Id, sri.Amount, missingAmount, i.KcalPer100g, i.PricePer100g));
+            }
+            return ingredientsToReturn;
+        }
+
+        public List<RecipeIngredientWithNameAndAmount> GetIngredientNameAndAmount(int selectedRecipeId)
+        {
+            List<RecipeIngredient> recipeIngredients = _recipeIngredients.Where(ri => ri.RecipeId == selectedRecipeId).ToList();
+
+            var results = recipeIngredients
+                .Select(ri =>
+                {
+                   _ingredientIdToNameMapper.TryGetValue(ri.IngredientId, out string name);
+                   return new RecipeIngredientWithNameAndAmount(name ?? "Unknown", ri.IngredientId, ri.Amount);
+                })
+                .ToList();
+
+            return results;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,10 +23,10 @@ namespace Cook_Book.UI
         private readonly IRecipeRepository _recipeRepository;
         private readonly IRecipeIngredientRepository _recipeIngredientRepository;
 
-        //private List<RecipesWithTypes> _recipesWithTypes = new();
         private List<RecipeIngredientWithNameAndAmount> _recipeIngredientWithNameAndAmounts = new();
+        private List<RecipeIngredientExtendedVM> _extendedRecipe = new();
 
-        public int selectedRecipeId { get; set; }
+        public int _selectedRecipeId;
         private FoodManagerCache _foodManagerCache;
 
         public FoodManagerForm(IRecipeRepository recipeRepository, IRecipeIngredientRepository recipeIngredientRepository, IServiceProvider serviceProvider)
@@ -42,24 +43,29 @@ namespace Cook_Book.UI
         private async void FoodManagerForm_Load(object sender, EventArgs e)
         {
             PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            await _foodManagerCache.RefreshData();
             DisplayRecipes(RecipeAvailability.Available);
             GetRecipeId();
-            await _foodManagerCache.RefreshData();
-            DisplayNameAndAmount();
+            DisplayRecipeDetails();
         }
 
         private void DisplayRecipes(RecipeAvailability recipeAvailability)
         {
-            List<Recipe> dataSource = new List<Recipe>();
             RecipesLbx.DataSource = null;
             if (recipeAvailability == RecipeAvailability.Available)
+            {
                 RecipesLbx.DataSource = _foodManagerCache.AvailableRecipes;
+                RecipesLbx.DisplayMember = "Name";
+                RecipesLbx.ValueMember = "Id";
+                RecipesLbx.SelectedIndex = 0;
+            }
             else if (recipeAvailability == RecipeAvailability.Unavailable)
+            {
                 RecipesLbx.DataSource = _foodManagerCache.UnavilableRecipes;
-
-            RecipesLbx.DisplayMember = "Name";
-            RecipesLbx.ValueMember = "Id";
-            //RecipesLbx.SelectedIndex = 0;
+                RecipesLbx.DisplayMember = "Name";
+                RecipesLbx.ValueMember = "Id";
+                RecipesLbx.SelectedIndex = 0;
+            }
         }
 
         private void DisplayRecipeDetails()
@@ -91,48 +97,36 @@ namespace Cook_Book.UI
                 PictureBox.Image = ImageHelper.placeHolderImage;
             }
 
+            decimal totalKcal = 0;
+            decimal totalPrice = 0;
+            foreach (var i in _extendedRecipe)
+            {
+                totalKcal += (i.KcalPer100g/100) * i.Amount;
+                totalPrice += (i.PricePer100g / 100) * i.Amount;
+            }
+
+            TotalCaloriesLbl.Text = Math.Round(totalKcal,2).ToString();
+            // The C2 will convert to currency with 2 decimal places
+            TotalPriceLbl.Text = totalPrice.ToString("C2", new CultureInfo("en-KE")); // format as currency into KES
         }
 
         private void GetRecipeId()
         {
             if (RecipesLbx.SelectedItem == null)
             {
-                selectedRecipeId = 0;
+                _selectedRecipeId = 0;
                 return;
             }
             Recipe selectedRecipe = (Recipe)RecipesLbx.SelectedItem;
-            selectedRecipeId = selectedRecipe.Id;
+            _selectedRecipeId = selectedRecipe.Id;
         }
 
         private async void RecipesLbx_SelectedIndexChanged(object sender, EventArgs e)
         {
             GetRecipeId(); // update the _selectedRecipeId
-            _recipeIngredientWithNameAndAmounts = await _recipeIngredientRepository.GetRecipeIngredients(selectedRecipeId);
-            DisplayNameAndAmount();
-            //OnSelectedItemChanged();
-        }
-
-        private void OnSelectedItemChanged()
-        {
-            throw new NotImplementedException();
-
-        }
-
-        private void DisplayNameAndAmount()
-        {
-            if (RecipesLbx.SelectedItem == null)
-            {
-                IngredientsLbx.DataSource = new List<Recipe>();
-                return;
-            }
-
-            List<RecipeIngredientsVM> recipeIngredientsVMs = _recipeIngredientWithNameAndAmounts
-                .Select(ri => new RecipeIngredientsVM(ri.Name, ri.IngredientId, ri.Amount))
-                .ToList();
-
-            IngredientsLbx.DataSource = null;
-            IngredientsLbx.DataSource = recipeIngredientsVMs;
-            IngredientsLbx.DisplayMember = "NameWithAmount";
+            _recipeIngredientWithNameAndAmounts = _foodManagerCache.GetIngredientNameAndAmount(_selectedRecipeId);
+            _extendedRecipe = _foodManagerCache.GetIngredients(_selectedRecipeId);
+            DisplayRecipeDetails();
         }
 
         private void PrepareFoodBtn_Click(object sender, EventArgs e)
