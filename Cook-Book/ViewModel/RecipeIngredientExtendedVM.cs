@@ -17,7 +17,7 @@ namespace Cook_Book.ViewModel
             get
             {
                 if (MissingAmount != 0)
-                    return NameWithAmount + $" Missing ({MissingAmount}g)";
+                    return NameWithAmount + $"  Missing ({MissingAmount}g)";
 
                 return NameWithAmount;
             }

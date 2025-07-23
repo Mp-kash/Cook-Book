@@ -36,6 +36,8 @@ namespace Cook_Book
 
             _ingredientsRepository.ErrorOccurred += message =>
               MessageBox.Show(message, "Error");
+            _ingredientsRepository.OnSuccess += message =>
+              MessageBox.Show(message, "Success");
             _recipeRepository.ErrorOccurred += message =>
               MessageBox.Show(message, "Error");
             _recipeIngredientRepository.ErrorOccurred += message => MessageBox.Show(message, "Error");
@@ -115,6 +117,13 @@ namespace Cook_Book
                 .ToList();
 
             return results;
+        }
+
+        public async Task PrepareFood(int selectedRecipeId)
+        {
+            List<RecipeIngredient> recipeIngredients = _recipeIngredients.Where(ri => ri.RecipeId == selectedRecipeId).ToList();
+
+            await _ingredientsRepository.UpdateAmounts(recipeIngredients);
         }
     }
 }

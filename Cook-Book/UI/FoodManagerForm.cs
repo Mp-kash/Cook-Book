@@ -12,6 +12,7 @@ using Cook_Book.Helper;
 using Cook_Book.ViewModel;
 using DataAccessLayer.CustomQueryResults;
 using DataAccessLayer.Interfaces;
+using DataAccessLayer.Logging;
 using DomainModel.Models;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,9 +41,16 @@ namespace Cook_Book.UI
             this.Load += FoodManagerForm_Load;
         }
 
+        private void errorLogger(string exMessage)
+        {
+            Logger.Log(exMessage, DateTime.Now);
+        }
+
         private async void FoodManagerForm_Load(object sender, EventArgs e)
         {
             PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            PrepareFoodBtn.Visible = true;
+            CreateShoppingListBtn.Visible = false;
             await _foodManagerCache.RefreshData();
             DisplayRecipes(RecipeAvailability.Available);
             GetRecipeId();
@@ -55,16 +63,20 @@ namespace Cook_Book.UI
             if (recipeAvailability == RecipeAvailability.Available)
             {
                 RecipesLbx.DataSource = _foodManagerCache.AvailableRecipes;
+                PrepareFoodBtn.Visible = true;
+                CreateShoppingListBtn.Visible = false;
+
                 RecipesLbx.DisplayMember = "Name";
                 RecipesLbx.ValueMember = "Id";
-                RecipesLbx.SelectedIndex = 0;
             }
             else if (recipeAvailability == RecipeAvailability.Unavailable)
             {
                 RecipesLbx.DataSource = _foodManagerCache.UnavilableRecipes;
+                PrepareFoodBtn.Visible = false;
+                CreateShoppingListBtn.Visible = true;
+
                 RecipesLbx.DisplayMember = "Name";
                 RecipesLbx.ValueMember = "Id";
-                RecipesLbx.SelectedIndex = 0;
             }
         }
 
@@ -80,13 +92,12 @@ namespace Cook_Book.UI
 
             Recipe selectedRecipe = (Recipe)RecipesLbx.SelectedItem;
             DescriptionTxt.Text = selectedRecipe.Description;
-            List<RecipeIngredientsVM> recipeIngredientsVMs = _recipeIngredientWithNameAndAmounts
-                .Select(ri => new RecipeIngredientsVM(ri.Name, ri.IngredientId, ri.Amount))
-                .ToList();
+
+            List<RecipeIngredientExtendedVM> recipeIngredientsExtendedVm = _foodManagerCache.GetIngredients(selectedRecipe.Id);
 
             IngredientsLbx.DataSource = null;
-            IngredientsLbx.DataSource = recipeIngredientsVMs;
-            IngredientsLbx.DisplayMember = "NameWithAmount";
+            IngredientsLbx.DataSource = recipeIngredientsExtendedVm;
+            IngredientsLbx.DisplayMember = "NameWithMissingAmount";
             byte[]? imageBytes = selectedRecipe.Image;
             if (imageBytes != null && imageBytes.Length > 0)
             {
@@ -101,11 +112,11 @@ namespace Cook_Book.UI
             decimal totalPrice = 0;
             foreach (var i in _extendedRecipe)
             {
-                totalKcal += (i.KcalPer100g/100) * i.Amount;
+                totalKcal += (i.KcalPer100g / 100) * i.Amount;
                 totalPrice += (i.PricePer100g / 100) * i.Amount;
             }
 
-            TotalCaloriesLbl.Text = Math.Round(totalKcal,2).ToString();
+            TotalCaloriesLbl.Text = Math.Round(totalKcal, 2).ToString();
             // The C2 will convert to currency with 2 decimal places
             TotalPriceLbl.Text = totalPrice.ToString("C2", new CultureInfo("en-KE")); // format as currency into KES
         }
@@ -121,7 +132,7 @@ namespace Cook_Book.UI
             _selectedRecipeId = selectedRecipe.Id;
         }
 
-        private async void RecipesLbx_SelectedIndexChanged(object sender, EventArgs e)
+        private void RecipesLbx_SelectedIndexChanged(object sender, EventArgs e)
         {
             GetRecipeId(); // update the _selectedRecipeId
             _recipeIngredientWithNameAndAmounts = _foodManagerCache.GetIngredientNameAndAmount(_selectedRecipeId);
@@ -129,9 +140,22 @@ namespace Cook_Book.UI
             DisplayRecipeDetails();
         }
 
-        private void PrepareFoodBtn_Click(object sender, EventArgs e)
+        private async void PrepareFoodBtn_Click(object sender, EventArgs e)
         {
+            if (RecipesLbx.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a recipe.");
+                return;
+            }
 
+            Recipe selectedRecipe = (Recipe)RecipesLbx.SelectedItem;
+
+            PrepareFoodBtn.Enabled = false;
+            await _foodManagerCache.PrepareFood(selectedRecipe.Id);
+            await _foodManagerCache.RefreshData();
+            PrepareFoodBtn.Enabled = true;
+
+            DisplayRecipes(RecipeAvailability.Available);
         }
 
         private void AvailableBtn_Click(object sender, EventArgs e)
@@ -143,5 +167,48 @@ namespace Cook_Book.UI
         {
             DisplayRecipes(RecipeAvailability.Unavailable);
         }
+
+        private void CreateShoppingListBtn_Click(object sender, EventArgs e)
+        {
+            if (RecipesLbx.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a recipe.");
+                return;
+            }
+
+            string shoppingList = "";
+            foreach(Recipe recipe in _foodManagerCache.UnavilableRecipes)
+            {
+                shoppingList += $"\nMissing ingredients for {recipe.Name}\n";
+
+                var recipeIngredients = _foodManagerCache.GetIngredients(recipe.Id);
+
+                foreach(var ingredient in recipeIngredients)
+                {
+                    if(ingredient.MissingAmount != 0)
+                        shoppingList += $"{ingredient.Name} {ingredient.MissingAmount}g \n";
+                }
+            }
+
+            try
+            {
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string filePath = Path.Combine(desktopPath, "ShoppingList2.txt");
+
+                using(StreamWriter sw = new StreamWriter(filePath))
+                {
+                    CreateShoppingListBtn.Enabled = false;
+                    sw.Write(shoppingList);
+                    MessageBox.Show("Write successful ✅");
+                    CreateShoppingListBtn.Enabled = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error occurred while creating the shopping list: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string exMessage = "Error happened while creating shopping list. " + ex.Message;
+                errorLogger(exMessage);
+            }
+        }       
     }
 }

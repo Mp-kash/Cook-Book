@@ -40,6 +40,9 @@
             label3 = new Label();
             TotalCaloriesLbl = new Label();
             TotalPriceLbl = new Label();
+            CreateShoppingListBtn = new Button();
+            LeftPanel = new Panel();
+            RightPanel = new Panel();
             ((System.ComponentModel.ISupportInitialize)PictureBox).BeginInit();
             SuspendLayout();
             // 
@@ -154,11 +157,38 @@
             TotalPriceLbl.TabIndex = 13;
             TotalPriceLbl.Text = "/";
             // 
+            // CreateShoppingListBtn
+            // 
+            CreateShoppingListBtn.Location = new Point(12, 504);
+            CreateShoppingListBtn.Name = "CreateShoppingListBtn";
+            CreateShoppingListBtn.Size = new Size(317, 54);
+            CreateShoppingListBtn.TabIndex = 14;
+            CreateShoppingListBtn.Text = "Create ShoppingList";
+            CreateShoppingListBtn.UseVisualStyleBackColor = true;
+            CreateShoppingListBtn.Click += CreateShoppingListBtn_Click;
+            // 
+            // LeftPanel
+            // 
+            LeftPanel.Dock = DockStyle.Left;
+            LeftPanel.Location = new Point(0, 0);
+            LeftPanel.Name = "LeftPanel";
+            LeftPanel.Size = new Size(345, 566);
+            LeftPanel.TabIndex = 15;
+            // 
+            // RightPanel
+            // 
+            RightPanel.Dock = DockStyle.Fill;
+            RightPanel.Location = new Point(0, 0);
+            RightPanel.Name = "RightPanel";
+            RightPanel.Size = new Size(1038, 566);
+            RightPanel.TabIndex = 16;
+            // 
             // FoodManagerForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1038, 566);
+            Controls.Add(CreateShoppingListBtn);
             Controls.Add(TotalPriceLbl);
             Controls.Add(TotalCaloriesLbl);
             Controls.Add(label3);
@@ -171,6 +201,8 @@
             Controls.Add(PrepareFoodBtn);
             Controls.Add(RecipesLbx);
             Controls.Add(AvailableBtn);
+            Controls.Add(LeftPanel);
+            Controls.Add(RightPanel);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Margin = new Padding(4);
             Name = "FoodManagerForm";
@@ -195,5 +227,8 @@
         private Label label3;
         private Label TotalCaloriesLbl;
         private Label TotalPriceLbl;
+        private Button CreateShoppingListBtn;
+        private Panel LeftPanel;
+        private Panel RightPanel;
     }
 }

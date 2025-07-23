@@ -9,13 +9,20 @@ using DomainModels.Models;
 using Microsoft.Data.SqlClient;
 using Dapper;
 using DataAccessLayer.Logging;
+using DomainModel.Models;
+using System.Globalization;
 
 namespace DataAccessLayer.Repositories
 {
     public class IngredientsRepository : IIngredientsRepository
     {
         public event Action<string>? ErrorOccurred;
+        public event Action<string>? OnSuccess;
 
+        private void SuccessfullyCompleted(string message)
+        {
+            OnSuccess?.Invoke(message);
+        }
         private void OnErrorOccurred(string exMessage, string errorMessage)
         {
             ErrorOccurred?.Invoke(errorMessage);
@@ -58,13 +65,13 @@ namespace DataAccessLayer.Repositories
                     await connection.ExecuteAsync(query, ingredient);
                 }
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 string exMessage = string.Empty;
                 string message = string.Empty;
 
                 // Unique constraint violation
-                if (ex.Number == 2627) 
+                if (ex.Number == 2627)
                 {
                     exMessage = ex.Message;
                     message = "Ingredient with name already exist!";
@@ -78,7 +85,7 @@ namespace DataAccessLayer.Repositories
             }
             catch (Exception ex)
             {
-                
+
                 string exMessage = "An error occurred while inserting ingredients into Sql Server: " + ex.Message;
                 string message = "An error occurred while inserting ingredients to the database.";
                 OnErrorOccurred(exMessage, message);
@@ -131,6 +138,34 @@ namespace DataAccessLayer.Repositories
                 string message = "An error occurred while deleting ingredients from the database.";
                 OnErrorOccurred(exMessage, message);
             }
-        }       
+        }
+
+        public async Task UpdateAmounts(List<RecipeIngredient> recipeIngredients)
+        {
+            try
+            {
+                string query = string.Empty;
+                foreach (var ri in recipeIngredients)
+                {
+                    string formattedAmount = ri.Amount.ToString("0.00", CultureInfo.InvariantCulture);
+                    query += $@" waitfor delay '00:00:00.100'
+                    update Fridge_Ingredients
+                    set Weight = Weight - {formattedAmount}
+                    where Id = {ri.IngredientId}; ";
+                }
+
+                using (IDbConnection connection = new SqlConnection(ConnectionHelper.ConnectionString))
+                {
+                    await connection.ExecuteAsync(query);
+                    SuccessfullyCompleted("Successfully completed");
+                }
+            }
+            catch (Exception ex)
+            {
+                string exMessage = "An error occurred while updating ingredient amounts in Sql Server: " + ex.Message;
+                string message = "An error occurred while updating ingredient amounts in the database.";
+                OnErrorOccurred(exMessage, message);
+            }
+        }
     }
 }

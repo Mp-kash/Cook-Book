@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Logging;
+using DomainModel.Models;
 using DomainModels.Models;
 
 namespace DataAccessLayer.Repositories
@@ -14,10 +15,14 @@ namespace DataAccessLayer.Repositories
         private readonly string _filePath;
 
         public event Action<string>? ErrorOccurred;
+        public event Action<string>? OnSuccess;
 
-        private void OnErrorOccurred(string exMessage, string errorMessage)
+        private void OnErrorOccurred(string exMessage, string? errorMessage)
         {
-            ErrorOccurred?.Invoke(errorMessage);
+            if (errorMessage != null)
+            {               
+                ErrorOccurred?.Invoke(errorMessage);
+            }
             Logger.Log(exMessage, DateTime.Now);  
         }
 
@@ -186,6 +191,49 @@ namespace DataAccessLayer.Repositories
             {
                 string exMessage = "Error occurred while deleting ingredient from the .txt file: " + ex.Message;
                 string message = "Error occurred while deleting ingredient from the file.";
+                OnErrorOccurred(exMessage, message);
+            }
+        }
+
+        public async Task UpdateAmounts(List<RecipeIngredient> recipeIngredients)
+        {
+            try
+            {
+                List<Ingredient> ingredients = await GetIngredients();
+
+                foreach (var ri in recipeIngredients)
+                {
+                    // Using LINQ expression to find ingredient to update
+                    Ingredient? ingredientToUpdate = ingredients.FirstOrDefault(i => i.Id == ri.IngredientId);
+
+                    if (ingredientToUpdate == null)
+                    {
+                        string exMessage = $"IngredientToUpdate with Id {ri.IngredientId} not found!";
+                        string message = $"Ingredient not found.";
+                        OnErrorOccurred(exMessage, message);
+                        continue; // skip to next ingredient
+                    }
+                    else
+                    {
+                        // subtract the used amount from the ingredient's weight
+                        ingredientToUpdate.Weight -= ri.Amount;
+
+                        if (ingredientToUpdate.Weight < 0)
+                        {
+                            ingredientToUpdate.Weight = 0; 
+                            string exMessage = $"Ingredient {ingredientToUpdate.Name} has negative weight after update!";
+                            OnErrorOccurred(exMessage, null);
+                        }
+                    }
+                }
+
+                // Write ingredients back to file
+               WriteAllIngredients(ingredients);
+            }
+            catch (Exception ex)
+            {
+                string exMessage = "Error occurred while updating amount in the .txt file: " + ex.Message;
+                string message = "Error occurred while updating amount in the file.";
                 OnErrorOccurred(exMessage, message);
             }
         }
