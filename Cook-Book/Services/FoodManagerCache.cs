@@ -9,7 +9,7 @@ using DataAccessLayer.Interfaces;
 using DomainModel.Models;
 using DomainModels.Models;
 
-namespace Cook_Book
+namespace Cook_Book.Services
 {
     public class FoodManagerCache
     {
@@ -77,10 +77,8 @@ namespace Cook_Book
                 }
 
                 Recipe? recipeToAdd = _recipes.FirstOrDefault(ri => ri.Id == recipeGroup.Key);
-                if (isRecipeAvailable)
-                    AvailableRecipes.Add(recipeToAdd);
-                else
-                    UnavilableRecipes.Add(recipeToAdd);
+
+                (isRecipeAvailable ? AvailableRecipes : UnavilableRecipes).Add(recipeToAdd);
             }
         }
 

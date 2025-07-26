@@ -1,4 +1,5 @@
 using System.Configuration;
+using Cook_Book.Services;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,9 @@ namespace Cook_Book.UI
             services.AddTransient<AmountsForm>();
             services.AddTransient<FoodManagerForm>();
 
+            // Register services
             services.AddTransient<FoodManagerCache>();
+            services.AddSingleton<DesktopFileWatcher>(DesktopFileWatcher.Instance);
 
             // Build provider
             ServiceProvider serviceProvider = services.BuildServiceProvider();

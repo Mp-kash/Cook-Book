@@ -43,7 +43,14 @@
             CreateShoppingListBtn = new Button();
             LeftPanel = new Panel();
             RightPanel = new Panel();
+            IconDisplay = new PictureBox();
+            label4 = new Label();
+            NotificationIcon = new PictureBox();
+            ItemsToDisplayLbl = new Label();
             ((System.ComponentModel.ISupportInitialize)PictureBox).BeginInit();
+            RightPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)IconDisplay).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NotificationIcon).BeginInit();
             SuspendLayout();
             // 
             // AvailableBtn
@@ -106,7 +113,7 @@
             // 
             // PictureBox
             // 
-            PictureBox.Location = new Point(726, 340);
+            PictureBox.Location = new Point(726, 344);
             PictureBox.Name = "PictureBox";
             PictureBox.Size = new Size(298, 214);
             PictureBox.TabIndex = 8;
@@ -115,7 +122,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(726, 40);
+            label1.Location = new Point(726, 43);
             label1.Name = "label1";
             label1.Size = new Size(157, 32);
             label1.TabIndex = 9;
@@ -142,7 +149,7 @@
             // TotalCaloriesLbl
             // 
             TotalCaloriesLbl.AutoSize = true;
-            TotalCaloriesLbl.Location = new Point(889, 40);
+            TotalCaloriesLbl.Location = new Point(889, 43);
             TotalCaloriesLbl.Name = "TotalCaloriesLbl";
             TotalCaloriesLbl.Size = new Size(23, 32);
             TotalCaloriesLbl.TabIndex = 12;
@@ -177,11 +184,63 @@
             // 
             // RightPanel
             // 
+            RightPanel.Controls.Add(IconDisplay);
+            RightPanel.Controls.Add(label4);
+            RightPanel.Controls.Add(NotificationIcon);
+            RightPanel.Controls.Add(ItemsToDisplayLbl);
+            RightPanel.Controls.Add(PictureBox);
+            RightPanel.Controls.Add(label3);
+            RightPanel.Controls.Add(TotalCaloriesLbl);
+            RightPanel.Controls.Add(TotalPriceLbl);
+            RightPanel.Controls.Add(IngredientsLbx);
+            RightPanel.Controls.Add(DescriptionTxt);
+            RightPanel.Controls.Add(label1);
+            RightPanel.Controls.Add(label2);
             RightPanel.Dock = DockStyle.Fill;
             RightPanel.Location = new Point(0, 0);
             RightPanel.Name = "RightPanel";
             RightPanel.Size = new Size(1038, 566);
             RightPanel.TabIndex = 16;
+            // 
+            // IconDisplay
+            // 
+            IconDisplay.Image = Properties.Resources.check1;
+            IconDisplay.Location = new Point(838, 129);
+            IconDisplay.Name = "IconDisplay";
+            IconDisplay.Size = new Size(45, 42);
+            IconDisplay.SizeMode = PictureBoxSizeMode.StretchImage;
+            IconDisplay.TabIndex = 16;
+            IconDisplay.TabStop = false;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(726, 139);
+            label4.Name = "label4";
+            label4.Size = new Size(101, 32);
+            label4.TabIndex = 15;
+            label4.Text = "Healthy:";
+            // 
+            // NotificationIcon
+            // 
+            NotificationIcon.Image = Properties.Resources.notification;
+            NotificationIcon.Location = new Point(647, 12);
+            NotificationIcon.Name = "NotificationIcon";
+            NotificationIcon.Size = new Size(73, 63);
+            NotificationIcon.SizeMode = PictureBoxSizeMode.StretchImage;
+            NotificationIcon.TabIndex = 14;
+            NotificationIcon.TabStop = false;
+            NotificationIcon.Visible = false;
+            // 
+            // ItemsToDisplayLbl
+            // 
+            ItemsToDisplayLbl.AutoSize = true;
+            ItemsToDisplayLbl.Font = new Font("Segoe UI Historic", 16F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            ItemsToDisplayLbl.Location = new Point(497, 262);
+            ItemsToDisplayLbl.Name = "ItemsToDisplayLbl";
+            ItemsToDisplayLbl.Size = new Size(326, 45);
+            ItemsToDisplayLbl.TabIndex = 0;
+            ItemsToDisplayLbl.Text = "No Items To Display";
             // 
             // FoodManagerForm
             // 
@@ -189,15 +248,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1038, 566);
             Controls.Add(CreateShoppingListBtn);
-            Controls.Add(TotalPriceLbl);
-            Controls.Add(TotalCaloriesLbl);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(PictureBox);
-            Controls.Add(IngredientsLbx);
             Controls.Add(UnavailableBtn);
-            Controls.Add(DescriptionTxt);
             Controls.Add(PrepareFoodBtn);
             Controls.Add(RecipesLbx);
             Controls.Add(AvailableBtn);
@@ -209,8 +260,11 @@
             Text = "FoodManagerForm";
             Load += FoodManagerForm_Load;
             ((System.ComponentModel.ISupportInitialize)PictureBox).EndInit();
+            RightPanel.ResumeLayout(false);
+            RightPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)IconDisplay).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NotificationIcon).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -230,5 +284,9 @@
         private Button CreateShoppingListBtn;
         private Panel LeftPanel;
         private Panel RightPanel;
+        private Label ItemsToDisplayLbl;
+        private PictureBox NotificationIcon;
+        private Label label4;
+        private PictureBox IconDisplay;
     }
 }

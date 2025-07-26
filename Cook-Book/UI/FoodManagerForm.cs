@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cook_Book.Helper;
+using Cook_Book.Services;
 using Cook_Book.ViewModel;
 using DataAccessLayer.CustomQueryResults;
 using DataAccessLayer.Interfaces;
@@ -29,6 +31,7 @@ namespace Cook_Book.UI
 
         public int _selectedRecipeId;
         private FoodManagerCache _foodManagerCache;
+        private DesktopFileWatcher _desktopFileWatcher;
 
         public FoodManagerForm(IRecipeRepository recipeRepository, IRecipeIngredientRepository recipeIngredientRepository, IServiceProvider serviceProvider)
         {
@@ -37,8 +40,23 @@ namespace Cook_Book.UI
             _recipeIngredientRepository = recipeIngredientRepository;
 
             _foodManagerCache = serviceProvider.GetRequiredService<FoodManagerCache>();
+            _desktopFileWatcher = serviceProvider.GetRequiredService<DesktopFileWatcher>();
 
+            // Observer design pattern: Subscriber
+            _desktopFileWatcher.OnFileStatusChanged += OnFileStatusChanged;          
             this.Load += FoodManagerForm_Load;
+        }
+
+        private void OnFileStatusChanged(bool fileExists)
+        {
+            // this ensures that the UI update happens on the UI thread
+            if (this.IsHandleCreated)
+            {
+                Invoke(new Action(() =>
+                {
+                    NotificationIcon.Visible = fileExists;
+                }));
+            }
         }
 
         private void errorLogger(string exMessage)
@@ -48,6 +66,7 @@ namespace Cook_Book.UI
 
         private async void FoodManagerForm_Load(object sender, EventArgs e)
         {
+            OnRightPanelFormLoad();
             PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
             PrepareFoodBtn.Visible = true;
             CreateShoppingListBtn.Visible = false;
@@ -55,6 +74,16 @@ namespace Cook_Book.UI
             DisplayRecipes(RecipeAvailability.Available);
             GetRecipeId();
             DisplayRecipeDetails();
+        }
+
+        private void OnRightPanelFormLoad()
+        {
+            PrepareFoodBtn.Enabled = false;
+            CreateShoppingListBtn.Enabled = false;
+            foreach(Control ctrl in RightPanel.Controls)
+            {
+                ctrl.Visible= false;
+            }
         }
 
         private void DisplayRecipes(RecipeAvailability recipeAvailability)
@@ -77,6 +106,32 @@ namespace Cook_Book.UI
 
                 RecipesLbx.DisplayMember = "Name";
                 RecipesLbx.ValueMember = "Id";
+            }
+
+            if (RecipesLbx.Items.Count == 0)
+            {
+                ShowPanelDetails(false);
+                CreateShoppingListBtn.Enabled = false;
+                PrepareFoodBtn.Enabled = false;
+            }
+            else
+            {
+                RecipesLbx.SelectedIndex = 0;
+                ShowPanelDetails(true);
+                NotificationIcon.Visible = DesktopFileWatcher.CurrentFileStatus;
+                CreateShoppingListBtn.Enabled = true;
+                PrepareFoodBtn.Enabled = true;
+            }
+        }
+
+        private void ShowPanelDetails(bool hasData)
+        {
+            foreach(Control ctrl in RightPanel.Controls)
+            {
+                if (ctrl == ItemsToDisplayLbl)
+                    ctrl.Visible = !hasData;
+                else
+                    ctrl.Visible = hasData;
             }
         }
 
@@ -205,7 +260,7 @@ namespace Cook_Book.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error occurred while creating the shopping list: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error occurred while creating the shopping list: " ,"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 string exMessage = "Error happened while creating shopping list. " + ex.Message;
                 errorLogger(exMessage);
             }
