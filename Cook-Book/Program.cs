@@ -37,6 +37,8 @@ namespace Cook_Book.UI
             services.AddTransient<RecipeIngredientsForm>();
             services.AddTransient<AmountsForm>();
             services.AddTransient<FoodManagerForm>();
+            services.AddTransient<HomeForm>();
+            services.AddTransient<SecretForm>();
 
             // Register services
             services.AddTransient<FoodManagerCache>();
@@ -46,7 +48,7 @@ namespace Cook_Book.UI
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
             // Get form from DI container
-            var form = serviceProvider.GetRequiredService<FoodManagerForm>();
+            var form = serviceProvider.GetRequiredService<HomeForm>();
 
             Application.Run(form);
         }

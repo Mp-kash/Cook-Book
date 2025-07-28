@@ -45,6 +45,7 @@
             RecipeTypeCbx = new ComboBox();
             RecipeFilterCbx = new ComboBox();
             EditRecipeBtn = new Button();
+            PreparedFoodCounter = new Label();
             ((System.ComponentModel.ISupportInitialize)RecipesGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ImageBox).BeginInit();
             ImageContextMenu.SuspendLayout();
@@ -181,7 +182,7 @@
             RecipeFilterCbx.FormattingEnabled = true;
             RecipeFilterCbx.Location = new Point(12, 12);
             RecipeFilterCbx.Name = "RecipeFilterCbx";
-            RecipeFilterCbx.Size = new Size(882, 40);
+            RecipeFilterCbx.Size = new Size(612, 40);
             RecipeFilterCbx.TabIndex = 13;
             RecipeFilterCbx.SelectedIndexChanged += RecipeFilterCbx_SelectedIndexChanged;
             // 
@@ -195,11 +196,21 @@
             EditRecipeBtn.UseVisualStyleBackColor = true;
             EditRecipeBtn.Click += EditRecipeBtn_Click;
             // 
+            // PreparedFoodCounter
+            // 
+            PreparedFoodCounter.AutoSize = true;
+            PreparedFoodCounter.Location = new Point(630, 15);
+            PreparedFoodCounter.Name = "PreparedFoodCounter";
+            PreparedFoodCounter.Size = new Size(23, 32);
+            PreparedFoodCounter.TabIndex = 15;
+            PreparedFoodCounter.Text = "/";
+            // 
             // RecipesForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1377, 602);
+            Controls.Add(PreparedFoodCounter);
             Controls.Add(EditRecipeBtn);
             Controls.Add(RecipeFilterCbx);
             Controls.Add(RecipeTypeCbx);
@@ -244,5 +255,6 @@
         private Button EditRecipeBtn;
         private ContextMenuStrip ImageContextMenu;
         private ToolStripMenuItem removeImageToolStripMenuItem;
+        private Label PreparedFoodCounter;
     }
 }

@@ -18,6 +18,8 @@ namespace Cook_Book.Services
         //Observer design pattern: (publisher)
         public event Action<bool>? OnFileStatusChanged;
 
+        public int PreparedRecipesCounter { get; set; } = 0;
+
         private DesktopFileWatcher()
         {
             _fileCheckWorker = new BackgroundWorker();

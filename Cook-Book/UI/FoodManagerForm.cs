@@ -43,15 +43,15 @@ namespace Cook_Book.UI
             _desktopFileWatcher = serviceProvider.GetRequiredService<DesktopFileWatcher>();
 
             // Observer design pattern: Subscriber
-            _desktopFileWatcher.OnFileStatusChanged += OnFileStatusChanged;          
+            _desktopFileWatcher.OnFileStatusChanged += OnFileStatusChanged;
             this.Load += FoodManagerForm_Load;
         }
 
         private void OnFileStatusChanged(bool fileExists)
         {
-            // this ensures that the UI update happens on the UI thread
             if (this.IsHandleCreated)
             {
+                // this ensures that the UI update happens on the UI thread
                 Invoke(new Action(() =>
                 {
                     NotificationIcon.Visible = fileExists;
@@ -80,9 +80,9 @@ namespace Cook_Book.UI
         {
             PrepareFoodBtn.Enabled = false;
             CreateShoppingListBtn.Enabled = false;
-            foreach(Control ctrl in RightPanel.Controls)
+            foreach (Control ctrl in RightPanel.Controls)
             {
-                ctrl.Visible= false;
+                ctrl.Visible = false;
             }
         }
 
@@ -126,7 +126,7 @@ namespace Cook_Book.UI
 
         private void ShowPanelDetails(bool hasData)
         {
-            foreach(Control ctrl in RightPanel.Controls)
+            foreach (Control ctrl in RightPanel.Controls)
             {
                 if (ctrl == ItemsToDisplayLbl)
                     ctrl.Visible = !hasData;
@@ -211,6 +211,8 @@ namespace Cook_Book.UI
             PrepareFoodBtn.Enabled = true;
 
             DisplayRecipes(RecipeAvailability.Available);
+
+            _desktopFileWatcher.PreparedRecipesCounter++;
         }
 
         private void AvailableBtn_Click(object sender, EventArgs e)
@@ -232,15 +234,15 @@ namespace Cook_Book.UI
             }
 
             string shoppingList = "";
-            foreach(Recipe recipe in _foodManagerCache.UnavilableRecipes)
+            foreach (Recipe recipe in _foodManagerCache.UnavilableRecipes)
             {
                 shoppingList += $"\nMissing ingredients for {recipe.Name}\n";
 
                 var recipeIngredients = _foodManagerCache.GetIngredients(recipe.Id);
 
-                foreach(var ingredient in recipeIngredients)
+                foreach (var ingredient in recipeIngredients)
                 {
-                    if(ingredient.MissingAmount != 0)
+                    if (ingredient.MissingAmount != 0)
                         shoppingList += $"{ingredient.Name} {ingredient.MissingAmount}g \n";
                 }
             }
@@ -250,7 +252,7 @@ namespace Cook_Book.UI
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 string filePath = Path.Combine(desktopPath, "ShoppingList2.txt");
 
-                using(StreamWriter sw = new StreamWriter(filePath))
+                using (StreamWriter sw = new StreamWriter(filePath))
                 {
                     CreateShoppingListBtn.Enabled = false;
                     sw.Write(shoppingList);
@@ -260,10 +262,20 @@ namespace Cook_Book.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error occurred while creating the shopping list: " ,"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error occurred while creating the shopping list: ", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 string exMessage = "Error happened while creating shopping list. " + ex.Message;
                 errorLogger(exMessage);
             }
-        }       
+        }
+
+        private void NotificationIcon_MouseEnter(object sender, EventArgs e)
+        {
+            NotificationTooltip.Show("You need to shop for missing ingredients!", NotificationIcon, 0, -10);
+        }
+
+        private void NotificationIcon_MouseLeave(object sender, EventArgs e)
+        {
+            NotificationTooltip.Hide(NotificationIcon);
+        }
     }
 }

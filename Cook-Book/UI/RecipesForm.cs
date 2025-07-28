@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cook_Book.Helper;
+using Cook_Book.Services;
 using DataAccessLayer.CustomQueryResults;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Logging;
@@ -33,6 +34,8 @@ namespace Cook_Book.UI
             _recipeRepository = recipeRepository;
             _recipeTypeRepository = recipeTypeRepository;
             _serviceProvider = serviceProvider;
+
+            PreparedFoodCounter.Text = $"Prepared Recipes: {DesktopFileWatcher.Instance.PreparedRecipesCounter.ToString()}";
         }
 
         private async void RecipesForm_Load(object sender, EventArgs e)
@@ -320,10 +323,7 @@ namespace Cook_Book.UI
             {
                 Title = "Select an Image",
                 Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp",
-                Multiselect = false,
-                //CheckFileExists = true,
-                //CheckPathExists = true,
-                //ValidateNames = true
+                Multiselect = false
             })
             {
                 if (openFileDialog.ShowDialog() == DialogResult.OK)

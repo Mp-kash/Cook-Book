@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             AvailableBtn = new Button();
             RecipesLbx = new ListBox();
             PrepareFoodBtn = new Button();
@@ -47,6 +48,7 @@
             label4 = new Label();
             NotificationIcon = new PictureBox();
             ItemsToDisplayLbl = new Label();
+            NotificationTooltip = new ToolTip(components);
             ((System.ComponentModel.ISupportInitialize)PictureBox).BeginInit();
             RightPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)IconDisplay).BeginInit();
@@ -231,6 +233,8 @@
             NotificationIcon.TabIndex = 14;
             NotificationIcon.TabStop = false;
             NotificationIcon.Visible = false;
+            NotificationIcon.MouseEnter += NotificationIcon_MouseEnter;
+            NotificationIcon.MouseLeave += NotificationIcon_MouseLeave;
             // 
             // ItemsToDisplayLbl
             // 
@@ -288,5 +292,6 @@
         private PictureBox NotificationIcon;
         private Label label4;
         private PictureBox IconDisplay;
+        private ToolTip NotificationTooltip;
     }
 }
