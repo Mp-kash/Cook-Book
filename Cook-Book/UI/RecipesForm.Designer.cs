@@ -29,11 +29,12 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             RecipesGrid = new DataGridView();
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
+            NameLbl = new Label();
+            TypeLbl = new Label();
+            DescriptionLbl = new Label();
+            ImageLbl = new Label();
             NameTxt = new TextBox();
             DescriptionTxt = new RichTextBox();
             ImageBox = new PictureBox();
@@ -45,68 +46,97 @@
             RecipeTypeCbx = new ComboBox();
             RecipeFilterCbx = new ComboBox();
             EditRecipeBtn = new Button();
-            PreparedFoodCounter = new Label();
+            RightPanel = new Panel();
+            LeftPanel = new Panel();
+            theme2Btn = new Button();
+            theme1Btn = new Button();
             ((System.ComponentModel.ISupportInitialize)RecipesGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ImageBox).BeginInit();
             ImageContextMenu.SuspendLayout();
+            RightPanel.SuspendLayout();
+            LeftPanel.SuspendLayout();
             SuspendLayout();
             // 
             // RecipesGrid
             // 
+            RecipesGrid.AllowUserToResizeColumns = false;
+            RecipesGrid.AllowUserToResizeRows = false;
+            RecipesGrid.BorderStyle = BorderStyle.None;
+            RecipesGrid.CellBorderStyle = DataGridViewCellBorderStyle.None;
+            RecipesGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.Padding = new Padding(0, 8, 0, 8);
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            RecipesGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             RecipesGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            RecipesGrid.EnableHeadersVisualStyles = false;
             RecipesGrid.Location = new Point(12, 58);
             RecipesGrid.Name = "RecipesGrid";
             RecipesGrid.RowHeadersWidth = 62;
+            RecipesGrid.RowTemplate.Height = 39;
             RecipesGrid.Size = new Size(882, 537);
             RecipesGrid.TabIndex = 0;
             RecipesGrid.CellClick += RecipesGrid_CellClick;
             // 
-            // label1
+            // NameLbl
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(900, 14);
-            label1.Name = "label1";
-            label1.Size = new Size(83, 32);
-            label1.TabIndex = 1;
-            label1.Text = "Name:";
+            NameLbl.AutoSize = true;
+            NameLbl.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            NameLbl.ForeColor = Color.FromArgb(235, 240, 209);
+            NameLbl.Location = new Point(915, 14);
+            NameLbl.Name = "NameLbl";
+            NameLbl.Size = new Size(85, 32);
+            NameLbl.TabIndex = 1;
+            NameLbl.Text = "Name:";
             // 
-            // label2
+            // TypeLbl
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(900, 64);
-            label2.Name = "label2";
-            label2.Size = new Size(70, 32);
-            label2.TabIndex = 2;
-            label2.Text = "Type:";
+            TypeLbl.AutoSize = true;
+            TypeLbl.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            TypeLbl.ForeColor = Color.FromArgb(235, 240, 209);
+            TypeLbl.Location = new Point(915, 68);
+            TypeLbl.Name = "TypeLbl";
+            TypeLbl.Size = new Size(71, 32);
+            TypeLbl.TabIndex = 2;
+            TypeLbl.Text = "Type:";
             // 
-            // label3
+            // DescriptionLbl
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(900, 113);
-            label3.Name = "label3";
-            label3.Size = new Size(140, 32);
-            label3.TabIndex = 3;
-            label3.Text = "Description:";
+            DescriptionLbl.AutoSize = true;
+            DescriptionLbl.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            DescriptionLbl.ForeColor = Color.FromArgb(235, 240, 209);
+            DescriptionLbl.Location = new Point(915, 124);
+            DescriptionLbl.Name = "DescriptionLbl";
+            DescriptionLbl.Size = new Size(143, 32);
+            DescriptionLbl.TabIndex = 3;
+            DescriptionLbl.Text = "Description:";
             // 
-            // label4
+            // ImageLbl
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(900, 302);
-            label4.Name = "label4";
-            label4.Size = new Size(85, 32);
-            label4.TabIndex = 4;
-            label4.Text = "Image:";
+            ImageLbl.AutoSize = true;
+            ImageLbl.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            ImageLbl.ForeColor = Color.FromArgb(235, 240, 209);
+            ImageLbl.Location = new Point(915, 286);
+            ImageLbl.Name = "ImageLbl";
+            ImageLbl.Size = new Size(88, 32);
+            ImageLbl.TabIndex = 4;
+            ImageLbl.Text = "Image:";
             // 
             // NameTxt
             // 
-            NameTxt.Location = new Point(1046, 14);
+            NameTxt.Location = new Point(1059, 11);
             NameTxt.Name = "NameTxt";
             NameTxt.Size = new Size(315, 39);
             NameTxt.TabIndex = 5;
             // 
             // DescriptionTxt
             // 
-            DescriptionTxt.Location = new Point(1046, 110);
+            DescriptionTxt.Location = new Point(1059, 110);
             DescriptionTxt.Name = "DescriptionTxt";
             DescriptionTxt.Size = new Size(315, 160);
             DescriptionTxt.TabIndex = 7;
@@ -115,7 +145,7 @@
             // ImageBox
             // 
             ImageBox.ContextMenuStrip = ImageContextMenu;
-            ImageBox.Location = new Point(1046, 276);
+            ImageBox.Location = new Point(1059, 276);
             ImageBox.Name = "ImageBox";
             ImageBox.Size = new Size(315, 197);
             ImageBox.TabIndex = 8;
@@ -139,7 +169,10 @@
             // 
             // AddRecipeBtn
             // 
-            AddRecipeBtn.Location = new Point(914, 479);
+            AddRecipeBtn.FlatAppearance.BorderSize = 0;
+            AddRecipeBtn.FlatStyle = FlatStyle.Flat;
+            AddRecipeBtn.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            AddRecipeBtn.Location = new Point(927, 479);
             AddRecipeBtn.Name = "AddRecipeBtn";
             AddRecipeBtn.Size = new Size(447, 55);
             AddRecipeBtn.TabIndex = 9;
@@ -149,7 +182,10 @@
             // 
             // ClearAllFieldsBtn
             // 
-            ClearAllFieldsBtn.Location = new Point(914, 540);
+            ClearAllFieldsBtn.FlatAppearance.BorderSize = 0;
+            ClearAllFieldsBtn.FlatStyle = FlatStyle.Flat;
+            ClearAllFieldsBtn.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            ClearAllFieldsBtn.Location = new Point(927, 540);
             ClearAllFieldsBtn.Name = "ClearAllFieldsBtn";
             ClearAllFieldsBtn.Size = new Size(447, 55);
             ClearAllFieldsBtn.TabIndex = 10;
@@ -159,7 +195,9 @@
             // 
             // AddRecipeTypeBtn
             // 
-            AddRecipeTypeBtn.Location = new Point(1229, 64);
+            AddRecipeTypeBtn.FlatAppearance.BorderSize = 0;
+            AddRecipeTypeBtn.FlatStyle = FlatStyle.Flat;
+            AddRecipeTypeBtn.Location = new Point(1242, 63);
             AddRecipeTypeBtn.Name = "AddRecipeTypeBtn";
             AddRecipeTypeBtn.Size = new Size(132, 40);
             AddRecipeTypeBtn.TabIndex = 11;
@@ -170,8 +208,9 @@
             // RecipeTypeCbx
             // 
             RecipeTypeCbx.DropDownStyle = ComboBoxStyle.DropDownList;
+            RecipeTypeCbx.FlatStyle = FlatStyle.Flat;
             RecipeTypeCbx.FormattingEnabled = true;
-            RecipeTypeCbx.Location = new Point(1046, 64);
+            RecipeTypeCbx.Location = new Point(1059, 64);
             RecipeTypeCbx.Name = "RecipeTypeCbx";
             RecipeTypeCbx.Size = new Size(177, 40);
             RecipeTypeCbx.TabIndex = 12;
@@ -179,16 +218,20 @@
             // RecipeFilterCbx
             // 
             RecipeFilterCbx.DropDownStyle = ComboBoxStyle.DropDownList;
+            RecipeFilterCbx.FlatStyle = FlatStyle.Flat;
             RecipeFilterCbx.FormattingEnabled = true;
             RecipeFilterCbx.Location = new Point(12, 12);
             RecipeFilterCbx.Name = "RecipeFilterCbx";
-            RecipeFilterCbx.Size = new Size(612, 40);
+            RecipeFilterCbx.Size = new Size(626, 40);
             RecipeFilterCbx.TabIndex = 13;
             RecipeFilterCbx.SelectedIndexChanged += RecipeFilterCbx_SelectedIndexChanged;
             // 
             // EditRecipeBtn
             // 
-            EditRecipeBtn.Location = new Point(914, 479);
+            EditRecipeBtn.FlatAppearance.BorderSize = 0;
+            EditRecipeBtn.FlatStyle = FlatStyle.Flat;
+            EditRecipeBtn.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            EditRecipeBtn.Location = new Point(927, 479);
             EditRecipeBtn.Name = "EditRecipeBtn";
             EditRecipeBtn.Size = new Size(447, 55);
             EditRecipeBtn.TabIndex = 14;
@@ -196,35 +239,67 @@
             EditRecipeBtn.UseVisualStyleBackColor = true;
             EditRecipeBtn.Click += EditRecipeBtn_Click;
             // 
-            // PreparedFoodCounter
+            // RightPanel
             // 
-            PreparedFoodCounter.AutoSize = true;
-            PreparedFoodCounter.Location = new Point(630, 15);
-            PreparedFoodCounter.Name = "PreparedFoodCounter";
-            PreparedFoodCounter.Size = new Size(23, 32);
-            PreparedFoodCounter.TabIndex = 15;
-            PreparedFoodCounter.Text = "/";
+            RightPanel.BackColor = Color.FromArgb(32, 45, 64);
+            RightPanel.Controls.Add(DescriptionLbl);
+            RightPanel.Controls.Add(TypeLbl);
+            RightPanel.Controls.Add(EditRecipeBtn);
+            RightPanel.Controls.Add(AddRecipeTypeBtn);
+            RightPanel.Controls.Add(RecipeTypeCbx);
+            RightPanel.Controls.Add(NameTxt);
+            RightPanel.Controls.Add(NameLbl);
+            RightPanel.Controls.Add(ImageLbl);
+            RightPanel.Controls.Add(ImageBox);
+            RightPanel.Controls.Add(ClearAllFieldsBtn);
+            RightPanel.Controls.Add(DescriptionTxt);
+            RightPanel.Controls.Add(AddRecipeBtn);
+            RightPanel.Dock = DockStyle.Fill;
+            RightPanel.Location = new Point(0, 0);
+            RightPanel.Name = "RightPanel";
+            RightPanel.Size = new Size(1388, 602);
+            RightPanel.TabIndex = 16;
+            // 
+            // LeftPanel
+            // 
+            LeftPanel.BackColor = Color.FromArgb(45, 66, 91);
+            LeftPanel.Controls.Add(theme2Btn);
+            LeftPanel.Controls.Add(theme1Btn);
+            LeftPanel.Controls.Add(RecipesGrid);
+            LeftPanel.Dock = DockStyle.Left;
+            LeftPanel.Location = new Point(0, 0);
+            LeftPanel.Name = "LeftPanel";
+            LeftPanel.Size = new Size(908, 602);
+            LeftPanel.TabIndex = 17;
+            // 
+            // theme2Btn
+            // 
+            theme2Btn.Location = new Point(779, 13);
+            theme2Btn.Name = "theme2Btn";
+            theme2Btn.Size = new Size(115, 38);
+            theme2Btn.TabIndex = 1;
+            theme2Btn.Text = "theme2";
+            theme2Btn.UseVisualStyleBackColor = true;
+            theme2Btn.Click += theme2Btn_Click;
+            // 
+            // theme1Btn
+            // 
+            theme1Btn.Location = new Point(661, 12);
+            theme1Btn.Name = "theme1Btn";
+            theme1Btn.Size = new Size(112, 40);
+            theme1Btn.TabIndex = 0;
+            theme1Btn.Text = "theme1";
+            theme1Btn.UseVisualStyleBackColor = true;
+            theme1Btn.Click += theme1Btn_Click;
             // 
             // RecipesForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1377, 602);
-            Controls.Add(PreparedFoodCounter);
-            Controls.Add(EditRecipeBtn);
+            ClientSize = new Size(1388, 602);
             Controls.Add(RecipeFilterCbx);
-            Controls.Add(RecipeTypeCbx);
-            Controls.Add(AddRecipeTypeBtn);
-            Controls.Add(ClearAllFieldsBtn);
-            Controls.Add(AddRecipeBtn);
-            Controls.Add(ImageBox);
-            Controls.Add(DescriptionTxt);
-            Controls.Add(NameTxt);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(RecipesGrid);
+            Controls.Add(LeftPanel);
+            Controls.Add(RightPanel);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Margin = new Padding(4);
             Name = "RecipesForm";
@@ -233,17 +308,19 @@
             ((System.ComponentModel.ISupportInitialize)RecipesGrid).EndInit();
             ((System.ComponentModel.ISupportInitialize)ImageBox).EndInit();
             ImageContextMenu.ResumeLayout(false);
+            RightPanel.ResumeLayout(false);
+            RightPanel.PerformLayout();
+            LeftPanel.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
         private DataGridView RecipesGrid;
-        private Label label1;
-        private Label label2;
-        private Label label3;
-        private Label label4;
+        private Label NameLbl;
+        private Label TypeLbl;
+        private Label DescriptionLbl;
+        private Label ImageLbl;
         private TextBox NameTxt;
         private RichTextBox DescriptionTxt;
         private PictureBox ImageBox;
@@ -255,6 +332,9 @@
         private Button EditRecipeBtn;
         private ContextMenuStrip ImageContextMenu;
         private ToolStripMenuItem removeImageToolStripMenuItem;
-        private Label PreparedFoodCounter;
+        private Panel RightPanel;
+        private Panel LeftPanel;
+        private Button theme2Btn;
+        private Button theme1Btn;
     }
 }

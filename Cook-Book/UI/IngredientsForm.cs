@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.DirectoryServices;
 using System.Threading.Tasks;
+using Cook_Book.Services;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Repositories;
 using DomainModels.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Cook_Book.UI
 {
@@ -27,6 +29,7 @@ namespace Cook_Book.UI
             // Used Lamda expression to subsribe to the error.
             _ingredientsRepository.ErrorOccurred += exMessage =>
                 MessageBox.Show(exMessage, "Error");
+            ApplyStyles(ThemeChanger.Instance.CurrentTheme);
         }
 
         private async void IngredientsForm_Load(object sender, EventArgs e)
@@ -36,7 +39,7 @@ namespace Cook_Book.UI
             _ingredients = await _ingredientsRepository.GetIngredients();
             SortByComboBox();
             SearchAndRefreshResult();
-            CustomizeGridAppearance();
+            CustomizeGridAppearance(ThemeChanger.Instance.CurrentTheme);
         }
 
         private async void AddIngredientBtn_Click(object sender, EventArgs e)
@@ -57,11 +60,13 @@ namespace Cook_Book.UI
             ClearInputFields();
         }
 
-        private void CustomizeGridAppearance()
+        private void CustomizeGridAppearance(int? theme = 1)
         {
             IngredientsDataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             IngredientsDataGrid.AutoGenerateColumns = false;
+
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(theme);
 
             DataGridViewColumn[] column = new DataGridViewColumn[8];
             column[0] = new DataGridViewTextBoxColumn() { DataPropertyName = "Id", Visible = false };
@@ -77,7 +82,14 @@ namespace Cook_Book.UI
                 HeaderText = "",
                 Name = "EditBtn",
                 Text = "Edit",
-                UseColumnTextForButtonValue = true
+                UseColumnTextForButtonValue = true,
+                FlatStyle = FlatStyle.Flat,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    BackColor = ColorTranslator.FromHtml(themeConfig["primaryBtnBgr"]?.ToString() ?? "#007bff"),
+                    ForeColor = ColorTranslator.FromHtml(themeConfig["primaryBtnFgr"]?.ToString() ?? "#ffffff"),
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
+                }
             };
 
             // Delete button column
@@ -86,7 +98,14 @@ namespace Cook_Book.UI
                 HeaderText = "",
                 Name = "DeleteBtn",
                 Text = "Delete",
-                UseColumnTextForButtonValue = true
+                UseColumnTextForButtonValue = true,
+                FlatStyle = FlatStyle.Flat,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    BackColor = ColorTranslator.FromHtml(themeConfig["secondaryBtnBgr"]?.ToString() ?? "#6c757d"),
+                    ForeColor = ColorTranslator.FromHtml(themeConfig["secondaryBtnFgr"]?.ToString() ?? "#ffffff"),
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
+                }
             };
 
             IngredientsDataGrid.RowHeadersVisible = false;
@@ -263,5 +282,144 @@ namespace Cook_Book.UI
 
             SearchAndRefreshResult();
         }
+
+        private void ApplyStyles(int? theme = 1)
+        {
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(theme);
+
+            string primaryBgr = themeConfig["primaryBgr"]?.ToString() ?? "#007bff";
+            string secondaryBgr = themeConfig["secondaryBgr"]?.ToString() ?? "#6c757d";
+            string primaryFgr = themeConfig["primaryFgr"]?.ToString() ?? "#ffffff";
+
+            // buttons color
+            string primaryBtnBgr = themeConfig["primaryBtnBgr"]?.ToString() ?? "#007bff";
+            string secondaryBtnBgr = themeConfig["secondaryBtnBgr"]?.ToString() ?? "#6c757d";   
+            string tertiaryBtnBgr = themeConfig["tertiaryBtnBgr"]?.ToString() ?? "#ffffff";
+            string primaryBtnFgr = themeConfig["primaryBtnFgr"]?.ToString() ?? "#ffffff";
+            string secondaryBtnFgr = themeConfig["secondaryBtnFgr"]?.ToString() ?? "#ffffff";
+            string tertiaryBtnFgr = themeConfig["tertiaryBtnFgr"]?.ToString() ?? "#000000";
+            string inputBgr = themeConfig["inputBgr"]?.ToString() ?? "#2b3b53";
+
+            LeftPanel.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            RightPanel.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+
+            NameLbl.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            TypeLbl.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            WeightLbl.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            KcalLbl.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            PriceLbl.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            SortByLbl.BackColor = ColorTranslator.FromHtml(primaryBgr);
+
+            NameTxt.BackColor = ColorTranslator.FromHtml(inputBgr);
+            TypeTxt.BackColor = ColorTranslator.FromHtml(inputBgr);
+            WeightNum.BackColor = ColorTranslator.FromHtml(inputBgr);
+            KcalPer100gNum.BackColor = ColorTranslator.FromHtml(inputBgr);
+            PricePer100gNum.BackColor = ColorTranslator.FromHtml(inputBgr);
+            SearchTxt.BackColor = ColorTranslator.FromHtml(inputBgr);
+
+            NameTxt.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            TypeTxt.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            WeightNum.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            KcalPer100gNum.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            PricePer100gNum.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            SearchTxt.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            NameLbl.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            TypeLbl.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            WeightLbl.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            KcalLbl.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            PriceLbl.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            SortByLbl.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+
+            AddIngredientBtn.BackColor = ColorTranslator.FromHtml(primaryBtnBgr);
+            EditIngredientsBtn.BackColor = ColorTranslator.FromHtml(primaryBtnBgr);
+            ClearAllFieldsBtn.BackColor = ColorTranslator.FromHtml(secondaryBtnBgr);
+
+            AddIngredientBtn.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            EditIngredientsBtn.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            ClearAllFieldsBtn.ForeColor = ColorTranslator.FromHtml(secondaryBtnFgr);
+
+            StyleComboBox(SortByCbx, inputBgr, primaryBtnFgr, primaryBgr, primaryBtnFgr);
+
+            IngredientsDataGrid.BackgroundColor = ColorTranslator.FromHtml(primaryBgr);        
+           IngredientsDataGrid.ColumnHeadersDefaultCellStyle.BackColor = ColorTranslator.FromHtml(secondaryBgr);   
+            IngredientsDataGrid.ColumnHeadersDefaultCellStyle.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+
+            IngredientsDataGrid.DefaultCellStyle.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            IngredientsDataGrid.DefaultCellStyle.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            IngredientsDataGrid.DefaultCellStyle.SelectionBackColor = Color.SteelBlue;
+        }
+
+        private void StyleComboBox(ComboBox comboBox, string backColor, string foreColor, string selectionBgr, string selectionFgr)
+        {
+            comboBox.BackColor = ColorTranslator.FromHtml(backColor);
+            comboBox.ForeColor = ColorTranslator.FromHtml(foreColor);
+
+            comboBox.DrawMode = DrawMode.OwnerDrawFixed;
+            comboBox.FlatStyle = FlatStyle.Flat;
+
+            comboBox.DrawItem -= ComboBox_DrawItem;
+            comboBox.DropDownClosed -= ComboBox_DropDownClosed;
+            comboBox.DrawItem += ComboBox_DrawItem;
+            comboBox.DropDownClosed += ComboBox_DropDownClosed;
+
+            comboBox.Tag = new
+            {
+                BackColor = ColorTranslator.FromHtml(backColor),
+                ForeColor = ColorTranslator.FromHtml(foreColor),
+                SelectionBackColor = ColorTranslator.FromHtml(selectionBgr),
+                SelectionForeColor = ColorTranslator.FromHtml(selectionFgr),
+                HoverBackColor = ColorTranslator.FromHtml(selectionBgr),
+                HoverForeColor = ColorTranslator.FromHtml(selectionFgr)
+            };
+        }
+
+        private void ComboBox_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (sender is not ComboBox comboBox) return;
+
+            var colors = comboBox.Tag as dynamic;
+            if (colors == null) return;
+
+            e.DrawBackground();
+
+            if (e.Index < 0)
+            {
+                using (Brush backBrush = new SolidBrush(colors.BackColor),
+                     foreBrush = new SolidBrush(colors.ForeColor))
+                {
+                    e.Graphics.FillRectangle(backBrush, e.Bounds);
+                    e.Graphics.DrawString(comboBox.Text, e.Font, foreBrush, e.Bounds);
+                }
+                return;
+            }
+
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+            Color backColor, foreColor;
+
+            backColor = isSelected ? ColorTranslator.FromHtml("#2C4E78") : colors.BackColor;
+            foreColor = isSelected ? ColorTranslator.FromHtml("#ffffff") : colors.ForeColor;
+
+            using (Brush backBrush = new SolidBrush(backColor),
+                   foreBrush = new SolidBrush(foreColor))
+            {
+                e.Graphics.FillRectangle(backBrush, e.Bounds);
+                e.Graphics.DrawString(comboBox.Items[e.Index].ToString() ?? string.Empty, e.Font, foreBrush, e.Bounds);
+            }
+
+            if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
+            {
+                e.DrawFocusRectangle();
+            }
+        }
+        private void ComboBox_DropDownClosed(object? sender, EventArgs e)
+        {
+            if (sender is ComboBox comboBox)
+            {
+                comboBox.Invalidate();
+            }
+        }
+
     }
 }

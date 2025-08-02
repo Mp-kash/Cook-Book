@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Logging
 {
-    public class Logger
+    public static class Logger
     {
         private static readonly string _logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Logger.txt");
         public static void Log(string message, DateTime time)

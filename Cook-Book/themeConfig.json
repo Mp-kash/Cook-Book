@@ -1,0 +1,18 @@
+﻿{
+    "primaryBgr": "#2d425b",
+    "secondaryBgr": "#202d40",
+    "primaryFgr": "#ebf0d1",
+
+    "primaryBtnBgr": "#29594f",
+    "secondaryBtnBgr": "indianRed",
+    "tertiaryBtnBgr": "#e88f41",
+    "inputBgr": "#2b3b53",
+    "disabledTertiaryBtnBgr": "#d6c0ad",
+    "disabledPrimaryBtnBgr": "#9ba9a6",
+    "classicBtnBgr": "#fcb00a",
+    "primaryBtnFgr": "#fff",
+    "secondaryBtnFgr": "#fff",
+    "tertiaryBtnFgr": "#fff",
+    "disabledTertiaryBtnFgr": "#f0f0f0",
+    "disabledPrimaryBtnFgr": "#e0e0e0"
+}

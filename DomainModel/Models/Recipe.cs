@@ -16,6 +16,11 @@ namespace DomainModel.Models
     
         public Recipe() { }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public Recipe(string name, string description, byte[]? image, int recipeTypeId, int? id = null)
         {
             Name = name;

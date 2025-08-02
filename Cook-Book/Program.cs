@@ -43,6 +43,7 @@ namespace Cook_Book.UI
             // Register services
             services.AddTransient<FoodManagerCache>();
             services.AddSingleton<DesktopFileWatcher>(DesktopFileWatcher.Instance);
+            services.AddSingleton<ThemeChanger>(ThemeChanger.Instance);
 
             // Build provider
             ServiceProvider serviceProvider = services.BuildServiceProvider();

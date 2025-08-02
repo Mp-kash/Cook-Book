@@ -23,6 +23,11 @@ namespace Cook_Book.ViewModel
             }
         }
 
+        public override string ToString()
+        {
+            return NameWithMissingAmount;
+        }
+
         public RecipeIngredientExtendedVM(string name, int ingredientId, decimal amount, decimal missingAmount, decimal kcalPer100g, decimal pricePer100g):base(name, ingredientId, amount) 
         {
             MissingAmount = missingAmount;

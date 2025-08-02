@@ -37,9 +37,16 @@
             // 
             // FridgeIngredientsBtn
             // 
-            FridgeIngredientsBtn.Location = new Point(30, 41);
+            FridgeIngredientsBtn.Dock = DockStyle.Top;
+            FridgeIngredientsBtn.FlatAppearance.BorderSize = 0;
+            FridgeIngredientsBtn.FlatStyle = FlatStyle.Flat;
+            FridgeIngredientsBtn.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            FridgeIngredientsBtn.ForeColor = Color.White;
+            FridgeIngredientsBtn.Image = Properties.Resources.icons8_fridge_32;
+            FridgeIngredientsBtn.ImageAlign = ContentAlignment.MiddleLeft;
+            FridgeIngredientsBtn.Location = new Point(0, 0);
             FridgeIngredientsBtn.Name = "FridgeIngredientsBtn";
-            FridgeIngredientsBtn.Size = new Size(340, 79);
+            FridgeIngredientsBtn.Size = new Size(364, 76);
             FridgeIngredientsBtn.TabIndex = 0;
             FridgeIngredientsBtn.Text = "Fridge Ingredients";
             FridgeIngredientsBtn.UseVisualStyleBackColor = true;
@@ -47,9 +54,16 @@
             // 
             // RecipesBtn
             // 
-            RecipesBtn.Location = new Point(30, 142);
+            RecipesBtn.Dock = DockStyle.Top;
+            RecipesBtn.FlatAppearance.BorderSize = 0;
+            RecipesBtn.FlatStyle = FlatStyle.Flat;
+            RecipesBtn.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            RecipesBtn.ForeColor = Color.White;
+            RecipesBtn.Image = Properties.Resources.icons8_recipe_32;
+            RecipesBtn.ImageAlign = ContentAlignment.MiddleLeft;
+            RecipesBtn.Location = new Point(0, 76);
             RecipesBtn.Name = "RecipesBtn";
-            RecipesBtn.Size = new Size(340, 79);
+            RecipesBtn.Size = new Size(364, 76);
             RecipesBtn.TabIndex = 1;
             RecipesBtn.Text = "Recipes";
             RecipesBtn.UseVisualStyleBackColor = true;
@@ -57,9 +71,16 @@
             // 
             // FoodManagerBtn
             // 
-            FoodManagerBtn.Location = new Point(30, 240);
+            FoodManagerBtn.Dock = DockStyle.Top;
+            FoodManagerBtn.FlatAppearance.BorderSize = 0;
+            FoodManagerBtn.FlatStyle = FlatStyle.Flat;
+            FoodManagerBtn.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            FoodManagerBtn.ForeColor = Color.White;
+            FoodManagerBtn.Image = Properties.Resources.icons8_dish_32;
+            FoodManagerBtn.ImageAlign = ContentAlignment.MiddleLeft;
+            FoodManagerBtn.Location = new Point(0, 152);
             FoodManagerBtn.Name = "FoodManagerBtn";
-            FoodManagerBtn.Size = new Size(340, 79);
+            FoodManagerBtn.Size = new Size(364, 76);
             FoodManagerBtn.TabIndex = 2;
             FoodManagerBtn.Text = "FoodManager";
             FoodManagerBtn.UseVisualStyleBackColor = true;
@@ -68,7 +89,7 @@
             // NotificationIcon
             // 
             NotificationIcon.Image = Properties.Resources.notification;
-            NotificationIcon.Location = new Point(157, 366);
+            NotificationIcon.Location = new Point(130, 304);
             NotificationIcon.Name = "NotificationIcon";
             NotificationIcon.Size = new Size(88, 75);
             NotificationIcon.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -79,7 +100,8 @@
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(398, 464);
+            BackColor = Color.FromArgb(45, 66, 91);
+            ClientSize = new Size(364, 430);
             Controls.Add(NotificationIcon);
             Controls.Add(FoodManagerBtn);
             Controls.Add(RecipesBtn);

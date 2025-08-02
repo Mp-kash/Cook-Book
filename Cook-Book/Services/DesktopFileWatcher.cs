@@ -46,10 +46,10 @@ namespace Cook_Book.Services
 
         private void FileStatusChanged(bool fileExists)
         {
-            if(OnFileStatusChanged != null)
-            {
-                OnFileStatusChanged.Invoke(fileExists);
-            }
+            // much safer
+            var handler = OnFileStatusChanged; 
+            handler?.Invoke(fileExists);
+            
         }
     }
 }

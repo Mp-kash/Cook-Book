@@ -17,6 +17,7 @@ using DataAccessLayer.Interfaces;
 using DataAccessLayer.Logging;
 using DomainModel.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 
 namespace Cook_Book.UI
 {
@@ -44,6 +45,10 @@ namespace Cook_Book.UI
 
             // Observer design pattern: Subscriber
             _desktopFileWatcher.OnFileStatusChanged += OnFileStatusChanged;
+
+            RecipesLbx.DrawMode = DrawMode.OwnerDrawFixed;
+
+            ApplyStyles(ThemeChanger.Instance.CurrentTheme);
             this.Load += FoodManagerForm_Load;
         }
 
@@ -88,6 +93,8 @@ namespace Cook_Book.UI
 
         private void DisplayRecipes(RecipeAvailability recipeAvailability)
         {
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(2);
+
             RecipesLbx.DataSource = null;
             if (recipeAvailability == RecipeAvailability.Available)
             {
@@ -113,14 +120,19 @@ namespace Cook_Book.UI
                 ShowPanelDetails(false);
                 CreateShoppingListBtn.Enabled = false;
                 PrepareFoodBtn.Enabled = false;
+                CreateShoppingListBtn.BackColor = ColorTranslator.FromHtml(themeConfig?["disabledTertiaryBtnBgr"]?.ToString() ?? "#d6c0ad");
+                CreateShoppingListBtn.ForeColor = ColorTranslator.FromHtml(themeConfig?["disabledTertiaryBtnFgr"]?.ToString() ?? "#e0e0e0");
+                PrepareFoodBtn.BackColor = ColorTranslator.FromHtml(themeConfig?["disabledPrimaryBtnBgr"]?.ToString() ?? "#9ba9a6");               
+                PrepareFoodBtn.ForeColor = ColorTranslator.FromHtml(themeConfig?["disabledPrimaryBtnFgr"]?.ToString() ?? "#e0e0e0");
             }
-            else
+            else if (RecipesLbx.Items.Count > 0)
             {
                 RecipesLbx.SelectedIndex = 0;
                 ShowPanelDetails(true);
                 NotificationIcon.Visible = DesktopFileWatcher.CurrentFileStatus;
                 CreateShoppingListBtn.Enabled = true;
                 PrepareFoodBtn.Enabled = true;
+                ApplyStyles(ThemeChanger.Instance.CurrentTheme);
             }
         }
 
@@ -170,6 +182,11 @@ namespace Cook_Book.UI
                 totalKcal += (i.KcalPer100g / 100) * i.Amount;
                 totalPrice += (i.PricePer100g / 100) * i.Amount;
             }
+
+            if(totalKcal > 300)
+                IconDisplay.Image = Properties.Resources.button;
+            else
+                IconDisplay.Image = Properties.Resources.check1;
 
             TotalCaloriesLbl.Text = Math.Round(totalKcal, 2).ToString();
             // The C2 will convert to currency with 2 decimal places
@@ -265,6 +282,101 @@ namespace Cook_Book.UI
                 MessageBox.Show("Error occurred while creating the shopping list: ", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 string exMessage = "Error happened while creating shopping list. " + ex.Message;
                 errorLogger(exMessage);
+            }
+        }
+
+        private void ApplyStyles(int? theme = 1)
+        {
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(theme);
+
+            string primaryBgr = themeConfig["primaryBgr"]?.ToString() ?? "#FFFFFF";
+            string secondaryBgr = themeConfig["secondaryBgr"]?.ToString() ?? "#F0F0F0";
+            string primaryFgr = themeConfig["primaryFgr"]?.ToString() ?? "#000000";
+
+            // buttons Bgr color
+            string primaryBtnBgr = themeConfig["primaryBtnBgr"]?.ToString() ?? "#007BFF";
+            string secondaryBtnBgr = themeConfig["secondaryBtnBgr"]?.ToString() ?? "#6C757D";
+            string tertiaryBtnBgr = themeConfig["tertiaryBtnBgr"]?.ToString() ?? "#28A745";
+            string classicBtnBgr = themeConfig["classicBtnBgr"]?.ToString() ?? "#DC3545";
+
+            // buttons Fgr color
+            string primaryBtnFgr = themeConfig["primaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string secondaryBtnFgr = themeConfig["secondaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string tertiaryBtnFgr = themeConfig["tertiaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+
+            LeftPanel.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            RightPanel.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+
+            TotalCalories.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            TotalCaloriesLbl.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            TotalPrice.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            TotalPriceLbl.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            Healthy.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            Ingredients.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+
+            AvailableBtn.BackColor = ColorTranslator.FromHtml(primaryBtnBgr);
+            AvailableBtn.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            UnavailableBtn.BackColor = ColorTranslator.FromHtml(secondaryBtnBgr);
+            UnavailableBtn.ForeColor = ColorTranslator.FromHtml(secondaryBtnFgr);
+
+            PrepareFoodBtn.BackColor = ColorTranslator.FromHtml(primaryBtnBgr);
+            PrepareFoodBtn.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            CreateShoppingListBtn.BackColor = ColorTranslator.FromHtml(tertiaryBtnBgr);
+            CreateShoppingListBtn.ForeColor = ColorTranslator.FromHtml(tertiaryBtnFgr);
+
+            DescriptionTxt.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            DescriptionTxt.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            StyleListBox(RecipesLbx, primaryBgr, primaryBtnFgr, secondaryBgr, primaryBtnFgr);
+            StyleListBox(IngredientsLbx, secondaryBgr, primaryBtnFgr, primaryBgr, primaryBtnFgr);
+
+            ItemsToDisplayLbl.ForeColor = ColorTranslator.FromHtml("#940909");
+        }
+
+        private void StyleListBox(ListBox Lbx, string backColor, string foreColor, string selectionBgr, string selectionFgr)
+        {
+            Lbx.BackColor = ColorTranslator.FromHtml(backColor);
+            Lbx.ForeColor = ColorTranslator.FromHtml(foreColor);
+
+            // Enable custom drawing
+            Lbx.DrawMode = DrawMode.OwnerDrawFixed;
+            Lbx.DrawItem -= ListBox_DrawItem; // Unsubscribe if already subscribed
+            Lbx.DrawItem += ListBox_DrawItem;
+
+            Lbx.Tag = new
+            {
+                BackColor = ColorTranslator.FromHtml(backColor),
+                ForeColor = ColorTranslator.FromHtml(foreColor),
+                SelectionBackColor = ColorTranslator.FromHtml(selectionBgr),
+                SelectionForeColor = ColorTranslator.FromHtml(selectionFgr)
+            };
+        }
+
+        private void ListBox_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (sender is not ListBox listBox) return;
+
+            var colors = listBox.Tag as dynamic;
+            if(colors == null) return;
+
+            e.DrawBackground();
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+            Color backColor = isSelected ? colors.SelectionBackColor : colors.BackColor;
+            Color foreColor = isSelected ? colors.SelectionForeColor : colors.ForeColor;
+
+            using (Brush backBrush = new SolidBrush(backColor),
+               foreBrush = new SolidBrush(foreColor))
+            {
+                e.Graphics.FillRectangle(backBrush, e.Bounds);
+                if (e.Index >= 0)
+                {
+                    string text = listBox.Items[e.Index].ToString() ?? string.Empty;
+                    e.Graphics.DrawString(text, e.Font, foreBrush, e.Bounds);
+                }
+            }
+            if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
+            {
+                e.DrawFocusRectangle();
             }
         }
 
