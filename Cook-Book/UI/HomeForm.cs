@@ -56,6 +56,13 @@ namespace Cook_Book.UI
             ShowForm(form);
         }
 
+        private void HealthAnalysisBtn_Click(object sender, EventArgs e)
+        {
+            HealthAnalysisForm form = _serviceProvider.GetRequiredService<HealthAnalysisForm>();
+            form.Text = "Health Analysis";
+            ShowForm(form);
+        }
+
         private void ShowForm(Form form)
         {
             form.MaximizeBox = false;
@@ -74,21 +81,23 @@ namespace Cook_Book.UI
             this.Text = "Home";
 
             JObject themeConfig = themeConfigManager.LoadThemeConfig(theme);
-            if(theme == 2)
+            if (theme == 2)
             {
                 FridgeIngredientsBtn.Image = Properties.Resources.icons8_fridge_32_blue;
                 RecipesBtn.Image = Properties.Resources.icons8_recipe_32_blue;
                 FoodManagerBtn.Image = Properties.Resources.icons8_dish_36_blue;
+                HealthAnalysisBtn.Image = Properties.Resources.icons8_first_aid_32_blue;
             }
             else
             {
                 FridgeIngredientsBtn.Image = Properties.Resources.icons8_fridge_32;
                 RecipesBtn.Image = Properties.Resources.icons8_recipe_32;
                 FoodManagerBtn.Image = Properties.Resources.icons8_dish_32;
+                HealthAnalysisBtn.Image = Properties.Resources.icons8_first_aid_32;
             }
 
 
-                this.BackColor = ColorTranslator.FromHtml(themeConfig?["primaryBgr"]?.ToString() ?? "#2d425b");
+            this.BackColor = ColorTranslator.FromHtml(themeConfig?["primaryBgr"]?.ToString() ?? "#2d425b");
             this.ForeColor = ColorTranslator.FromHtml(themeConfig?["primaryFgr"]?.ToString() ?? "#ffffff");
             FridgeIngredientsBtn.BackColor = ColorTranslator.FromHtml(themeConfig?["primaryBgr"]?.ToString() ?? "#3a4b6c");
             FridgeIngredientsBtn.ForeColor = ColorTranslator.FromHtml(themeConfig?["primaryBtnFgr"]?.ToString() ?? "#ffffff");
@@ -98,11 +107,14 @@ namespace Cook_Book.UI
 
             FoodManagerBtn.BackColor = ColorTranslator.FromHtml(themeConfig?["primaryBgr"]?.ToString() ?? "#3a4b6c");
             FoodManagerBtn.ForeColor = ColorTranslator.FromHtml(themeConfig?["primaryBtnFgr"]?.ToString() ?? "#3a4b6c");
+
+            HealthAnalysisBtn.BackColor = ColorTranslator.FromHtml(themeConfig?["primaryBgr"]?.ToString() ?? "#3a4b6c");
+            HealthAnalysisBtn.ForeColor = ColorTranslator.FromHtml(themeConfig?["primaryBtnFgr"]?.ToString() ?? "#3a4b6c");
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if(keyData == (Keys.Control | Keys.O))
+            if (keyData == (Keys.Control | Keys.O))
             {
                 SecretForm form = _serviceProvider.GetRequiredService<SecretForm>();
                 ShowForm(form);
@@ -111,5 +123,6 @@ namespace Cook_Book.UI
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
+      
     }
 }

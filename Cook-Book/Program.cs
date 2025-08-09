@@ -1,5 +1,6 @@
 using System.Configuration;
 using Cook_Book.Services;
+using Cook_Book.Services.API_s;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,11 +40,14 @@ namespace Cook_Book.UI
             services.AddTransient<FoodManagerForm>();
             services.AddTransient<HomeForm>();
             services.AddTransient<SecretForm>();
+            services.AddTransient<HealthAnalysisForm>();
 
             // Register services
             services.AddTransient<FoodManagerCache>();
             services.AddSingleton<DesktopFileWatcher>(DesktopFileWatcher.Instance);
             services.AddSingleton<ThemeChanger>(ThemeChanger.Instance);
+            string apiKey = ConfigurationManager.AppSettings["USDAApiKey"];
+            services.AddSingleton<USDAApiService>(provider => new USDAApiService(apiKey));
 
             // Build provider
             ServiceProvider serviceProvider = services.BuildServiceProvider();

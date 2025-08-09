@@ -32,6 +32,7 @@
             RecipesBtn = new Button();
             FoodManagerBtn = new Button();
             NotificationIcon = new PictureBox();
+            HealthAnalysisBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)NotificationIcon).BeginInit();
             SuspendLayout();
             // 
@@ -89,12 +90,29 @@
             // NotificationIcon
             // 
             NotificationIcon.Image = Properties.Resources.notification;
-            NotificationIcon.Location = new Point(130, 304);
+            NotificationIcon.Location = new Point(125, 343);
             NotificationIcon.Name = "NotificationIcon";
             NotificationIcon.Size = new Size(88, 75);
             NotificationIcon.SizeMode = PictureBoxSizeMode.StretchImage;
             NotificationIcon.TabIndex = 3;
             NotificationIcon.TabStop = false;
+            // 
+            // HealthAnalysisBtn
+            // 
+            HealthAnalysisBtn.Dock = DockStyle.Top;
+            HealthAnalysisBtn.FlatAppearance.BorderSize = 0;
+            HealthAnalysisBtn.FlatStyle = FlatStyle.Flat;
+            HealthAnalysisBtn.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            HealthAnalysisBtn.ForeColor = Color.White;
+            HealthAnalysisBtn.Image = Properties.Resources.icons8_first_aid_32;
+            HealthAnalysisBtn.ImageAlign = ContentAlignment.MiddleLeft;
+            HealthAnalysisBtn.Location = new Point(0, 228);
+            HealthAnalysisBtn.Name = "HealthAnalysisBtn";
+            HealthAnalysisBtn.Size = new Size(364, 78);
+            HealthAnalysisBtn.TabIndex = 4;
+            HealthAnalysisBtn.Text = "Health Analysis";
+            HealthAnalysisBtn.UseVisualStyleBackColor = true;
+            HealthAnalysisBtn.Click += HealthAnalysisBtn_Click;
             // 
             // HomeForm
             // 
@@ -102,6 +120,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(45, 66, 91);
             ClientSize = new Size(364, 430);
+            Controls.Add(HealthAnalysisBtn);
             Controls.Add(NotificationIcon);
             Controls.Add(FoodManagerBtn);
             Controls.Add(RecipesBtn);
@@ -120,5 +139,6 @@
         private Button RecipesBtn;
         private Button FoodManagerBtn;
         private PictureBox NotificationIcon;
+        private Button HealthAnalysisBtn;
     }
 }

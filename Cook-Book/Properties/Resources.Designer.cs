@@ -103,6 +103,26 @@ namespace Cook_Book.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap icons8_first_aid_32 {
+            get {
+                object obj = ResourceManager.GetObject("icons8-first-aid-32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons8_first_aid_32_blue {
+            get {
+                object obj = ResourceManager.GetObject("icons8-first-aid-32-blue", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icons8_fridge_32 {
             get {
                 object obj = ResourceManager.GetObject("icons8-fridge-32", resourceCulture);
