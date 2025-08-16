@@ -13,6 +13,7 @@ using DataAccessLayer.Interfaces;
 using DataAccessLayer.Logging;
 using DomainModel.Models;
 using DomainModels.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Cook_Book
 {
@@ -37,6 +38,7 @@ namespace Cook_Book
             _recipeIngredientRepository = recipeIngredientRepository;
             _recipeRepository = recipeRepository;
             _ingredientRepository = ingredientsRepository;
+            NutritionProgressBar.Visible = false;
         }
 
         private void ErrorLogger(string exMessage)
@@ -53,15 +55,16 @@ namespace Cook_Book
             _ingredientsToName = _ingredients.ToDictionary(i => i.Id, i => i.Name);
             LoadRecipesCbx();
             CustomizeGridAppearance();
+            CustomizeGridAppearance2();
         }
 
         private void CustomizeGridAppearance()
         {
-            IngredientsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            IngredientsGrid.RowHeadersVisible = false;
-            IngredientsGrid.AutoGenerateColumns = false;
+            NutritionGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            NutritionGrid.RowHeadersVisible = false;
+            NutritionGrid.AutoGenerateColumns = false;
 
-            DataGridViewColumn[] column = new DataGridViewColumn[4];
+            DataGridViewColumn[] column = new DataGridViewColumn[5];
             column[0] = new DataGridViewTextBoxColumn
             {
                 HeaderText = "Ingredient",
@@ -82,7 +85,28 @@ namespace Cook_Book
                 HeaderText = "Fat (g)",
                 DataPropertyName = "Fat"
             };
+            column[4] = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Protein (g)",
+                DataPropertyName = "Protein"
+            };
+            NutritionGrid.Columns.Clear();
+            NutritionGrid.Columns.AddRange(column);
+        }
 
+        private void CustomizeGridAppearance2()
+        {
+            IngredientsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            IngredientsGrid.AutoGenerateColumns = false;
+
+            DataGridViewColumn[] column = new DataGridViewColumn[4];
+            column[0] = new DataGridViewTextBoxColumn() { DataPropertyName="Name", HeaderText="Ingredient" };
+            column[1] = new DataGridViewTextBoxColumn() { DataPropertyName = "Amount", HeaderText = "Amount" };
+            column[2] = new DataGridViewTextBoxColumn() { DataPropertyName = "KcalPer100g", HeaderText = "Cal (100g)" };
+            column[3] = new DataGridViewTextBoxColumn() { DataPropertyName = "PricePer100g", HeaderText = "Price (100g)" };
+
+            IngredientsGrid.RowHeadersVisible = false;
             IngredientsGrid.Columns.Clear();
             IngredientsGrid.Columns.AddRange(column);
         }
@@ -110,40 +134,37 @@ namespace Cook_Book
 
             FetchNutritionInfoBtn.Enabled = false;
             FetchNutritionInfoBtn.Text = "Fetching...";
+            Cursor = Cursors.WaitCursor;
+            NutritionProgressBar.Visible = true;
+            NutritionProgressBar.Style = ProgressBarStyle.Marquee; 
 
             try
             {
+
+                var nutritionTasks = new List<Task<IngredientNutritionInfo>>(); // List to hold tasks.
+
                 foreach (var item in selectedIngredients)
                 {
                     if (!_ingredientsToName.TryGetValue(item.IngredientId, out string ingredientName))
                         continue;
 
-                    // get nutrition info from USDA API
-                    var nutritionInfo = await _usdaApiService.GetIngredientNutriationAsync(ingredientName);
-
-                    if (nutritionInfo != null)
-                    {
-                        nutritionInfo.Calories = Math.Round((nutritionInfo.Calories * item.Amount) / 100, 2);
-                        nutritionInfo.Carbs = Math.Round((nutritionInfo.Carbs * item.Amount) / 100, 2);
-                        nutritionInfo.Fat = Math.Round((nutritionInfo.Fat * item.Amount) / 100, 2);
-
-                        nutritionList.Add(nutritionInfo);
-                    }
-                    else
-                    {
-                        nutritionList.Add(new IngredientNutritionInfo
-                        {
-                            Ingredient = ingredientName,
-                            Calories = 0,
-                            Carbs = 0,
-                            Fat = 0,
-                            Protein = 0
-                        });
-                    }
+                    nutritionTasks.Add(GetNutritionWithAmountAsync(ingredientName, item.Amount));                   
                 }
-                // update the grid
-                IngredientsGrid.DataSource = null;
-                IngredientsGrid.DataSource = nutritionList;
+
+                var nutritionResults = await Task.WhenAll(nutritionTasks);
+
+                decimal totalCal = nutritionResults.Sum(x => x.Calories);
+                decimal totalCarbs = nutritionResults.Sum(x => x.Carbs);
+                decimal totalFat = nutritionResults.Sum(x => x.Fat);
+                decimal totalProtein = nutritionResults.Sum(x => x.Protein);
+
+                TotalCaloriesLbl.Text = totalCal.ToString();
+                TotalCarbsLbl.Text = totalCarbs.ToString();
+                TotalFatLbl.Text = totalFat.ToString();
+                TotalProteinLbl.Text = totalProtein.ToString();
+
+                NutritionGrid.DataSource = null;
+                NutritionGrid.DataSource = nutritionResults.Where(r => r!= null).ToList();
             } catch(Exception ex)
             {
                 MessageBox.Show("Error occurred while fetching Nutritional Data from the API!", "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -151,9 +172,28 @@ namespace Cook_Book
             }
             finally
             {
+                NutritionProgressBar.Visible = false;
                 FetchNutritionInfoBtn.Enabled = true;
                 FetchNutritionInfoBtn.Text = "Fetch Nutrition Info";
+                Cursor = Cursors.Default;
             }
+        }
+
+        private async Task<IngredientNutritionInfo> GetNutritionWithAmountAsync(string ingredientName, decimal amount)
+        {
+            // get nutrition info from USDA API
+            var nutritionInfo = await _usdaApiService.GetIngredientNutriationAsync(ingredientName);
+            if (nutritionInfo == null) return null;
+
+            decimal amountFactor = amount / 100m;
+            return new IngredientNutritionInfo
+            {
+                Ingredient = ingredientName,
+                Calories = Math.Round(nutritionInfo.Calories * amountFactor, 2),
+                Carbs = Math.Round(nutritionInfo.Carbs * amountFactor, 2),
+                Fat = Math.Round(nutritionInfo.Fat * amountFactor, 2),
+                Protein = Math.Round(nutritionInfo.Protein * amountFactor, 2)
+            };
         }
 
         private void LoadRecipesCbx()
@@ -178,9 +218,14 @@ namespace Cook_Book
         {
             if (RecipesCbx.SelectedIndex <= 0 || RecipesCbx.SelectedItem == null)
             {
-                IngredientsGrid.DataSource = null;
+                NutritionGrid.DataSource = null;
                 return;
             }
+
+            TotalCaloriesLbl.Text = "0.00";
+            TotalCarbsLbl.Text = "0.00";
+            TotalFatLbl.Text = "0.00";
+            TotalProteinLbl.Text = "0.00";
 
             string? selectedRecipeName = RecipesCbx.SelectedItem.ToString();
 
@@ -192,18 +237,27 @@ namespace Cook_Book
                 {
                     Ingredient? ingredient = _ingredients.FirstOrDefault(x => x.Id == ri.IngredientId);
                     _ingredientsToName.TryGetValue(ri.IngredientId, out string name);
-                    decimal calories = (ingredient.KcalPer100g * ri.Amount) / 100;
+
                     return new
                     {
-                        Ingredient = name,
-                        Calories = Math.Round(calories, 2),
-                        Carbs = 0,
-                        Fat = 0
+                        Name = name,
+                        Amount = Math.Round(ri.Amount,2),
+                        KcalPer100g = Math.Round((ingredient?.KcalPer100g ?? 0) * ri.Amount / 100, 2),
+                        PricePer100g = Math.Round((ingredient?.PricePer100g ?? 0) * ri.Amount / 100, 2)
                     };
                 })
                 .ToList();
 
             IngredientsGrid.DataSource = selectedIngredients;
+
+            NutritionGrid.DataSource = selectedIngredients.Select(x => new
+            {
+                Ingredient = x.Name,
+                Calories = 0,
+                Carbs = 0,
+                Fat = 0,
+                Protein = 0
+            }).ToList();
         }  
     }
 }

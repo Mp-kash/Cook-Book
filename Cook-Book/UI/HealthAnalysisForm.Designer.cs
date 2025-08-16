@@ -30,6 +30,7 @@
         {
             TableLayoutPanel = new TableLayoutPanel();
             groupBox1 = new GroupBox();
+            NutritionProgressBar = new ProgressBar();
             FetchNutritionInfoBtn = new Button();
             IngredientsGrid = new DataGridView();
             RecipesCbx = new ComboBox();
@@ -87,6 +88,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(NutritionProgressBar);
             groupBox1.Controls.Add(FetchNutritionInfoBtn);
             groupBox1.Controls.Add(IngredientsGrid);
             groupBox1.Controls.Add(RecipesCbx);
@@ -97,6 +99,13 @@
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
             groupBox1.Text = "Recipe Ingredients";
+            // 
+            // NutritionProgressBar
+            // 
+            NutritionProgressBar.Location = new Point(179, 272);
+            NutritionProgressBar.Name = "NutritionProgressBar";
+            NutritionProgressBar.Size = new Size(423, 50);
+            NutritionProgressBar.TabIndex = 3;
             // 
             // FetchNutritionInfoBtn
             // 
@@ -151,23 +160,23 @@
             TotalFatLbl.AutoSize = true;
             TotalFatLbl.Location = new Point(690, 362);
             TotalFatLbl.Name = "TotalFatLbl";
-            TotalFatLbl.Size = new Size(23, 32);
+            TotalFatLbl.Size = new Size(58, 32);
             TotalFatLbl.TabIndex = 8;
-            TotalFatLbl.Text = "/\r\n";
+            TotalFatLbl.Text = "0.00";
             // 
             // TotalProteinLbl
             // 
             TotalProteinLbl.AutoSize = true;
             TotalProteinLbl.Location = new Point(690, 311);
             TotalProteinLbl.Name = "TotalProteinLbl";
-            TotalProteinLbl.Size = new Size(23, 32);
+            TotalProteinLbl.Size = new Size(58, 32);
             TotalProteinLbl.TabIndex = 7;
-            TotalProteinLbl.Text = "/";
+            TotalProteinLbl.Text = "0.00";
             // 
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(372, 362);
+            label8.Location = new Point(427, 362);
             label8.Name = "label8";
             label8.Size = new Size(103, 32);
             label8.TabIndex = 6;
@@ -176,7 +185,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(372, 311);
+            label7.Location = new Point(427, 311);
             label7.Name = "label7";
             label7.Size = new Size(148, 32);
             label7.TabIndex = 5;
@@ -185,20 +194,20 @@
             // TotalCarbsLbl
             // 
             TotalCarbsLbl.AutoSize = true;
-            TotalCarbsLbl.Location = new Point(320, 362);
+            TotalCarbsLbl.Location = new Point(252, 362);
             TotalCarbsLbl.Name = "TotalCarbsLbl";
-            TotalCarbsLbl.Size = new Size(23, 32);
+            TotalCarbsLbl.Size = new Size(58, 32);
             TotalCarbsLbl.TabIndex = 4;
-            TotalCarbsLbl.Text = "/";
+            TotalCarbsLbl.Text = "0.00";
             // 
             // TotalCaloriesLbl
             // 
             TotalCaloriesLbl.AutoSize = true;
-            TotalCaloriesLbl.Location = new Point(320, 311);
+            TotalCaloriesLbl.Location = new Point(252, 311);
             TotalCaloriesLbl.Name = "TotalCaloriesLbl";
-            TotalCaloriesLbl.Size = new Size(23, 32);
+            TotalCaloriesLbl.Size = new Size(58, 32);
             TotalCaloriesLbl.TabIndex = 3;
-            TotalCaloriesLbl.Text = "/";
+            TotalCaloriesLbl.Text = "0.00";
             // 
             // label4
             // 
@@ -394,5 +403,6 @@
         private Label label8;
         private Label label7;
         private Label TotalCarbsLbl;
+        private ProgressBar NutritionProgressBar;
     }
 }

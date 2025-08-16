@@ -31,6 +31,23 @@ namespace DomainModel.Models
 
         [JsonPropertyName("amount")]
         public double Amount { get; set; }
+
+        public decimal GetNormalizedValue()
+        {
+            if (Nutrient == null) return 0;
+
+            if (Nutrient.Id == 1003 && Nutrient.UnitName == "g" && Amount > 10)
+            {
+                return (decimal)Amount / 10; // Correct 12.5g → 1.25g
+            }
+
+            return Nutrient.UnitName.ToLower() switch
+            {
+                "mg" => (decimal)Amount / 1000,
+                "µg" => (decimal)Amount / 1000000,
+                _ => (decimal)Amount
+            };
+        }
     }
 
     public class Nutrient
