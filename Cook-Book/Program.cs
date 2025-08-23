@@ -46,8 +46,10 @@ namespace Cook_Book.UI
             services.AddTransient<FoodManagerCache>();
             services.AddSingleton<DesktopFileWatcher>(DesktopFileWatcher.Instance);
             services.AddSingleton<ThemeChanger>(ThemeChanger.Instance);
-            string apiKey = ConfigurationManager.AppSettings["USDAApiKey"];
-            services.AddSingleton<USDAApiService>(provider => new USDAApiService(apiKey));
+            string USDAKey = ConfigurationManager.AppSettings["USDAApiKey"];
+            string GeminiKey = ConfigurationManager.AppSettings["Gemini"];
+            services.AddSingleton<USDAApiService>(provider => new USDAApiService(USDAKey));
+            services.AddSingleton(new GeminiService(GeminiKey));
 
             // Build provider
             ServiceProvider serviceProvider = services.BuildServiceProvider();

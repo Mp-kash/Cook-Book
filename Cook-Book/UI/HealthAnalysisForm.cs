@@ -20,6 +20,7 @@ namespace Cook_Book
     public partial class HealthAnalysisForm : Form
     {
         private readonly USDAApiService _usdaApiService;
+        private readonly GeminiService _geminiService;
         private readonly IRecipeIngredientRepository _recipeIngredientRepository;
         private readonly IRecipeRepository _recipeRepository;
         private readonly IIngredientsRepository _ingredientRepository;
@@ -30,7 +31,7 @@ namespace Cook_Book
         private Dictionary<int, string> _recipesToName = new();
         private Dictionary<int, string> _ingredientsToName = new();
 
-        public HealthAnalysisForm(USDAApiService usdaApiService, IRecipeIngredientRepository recipeIngredientRepository, IRecipeRepository recipeRepository, IIngredientsRepository ingredientsRepository)
+        public HealthAnalysisForm(USDAApiService usdaApiService, IRecipeIngredientRepository recipeIngredientRepository, IRecipeRepository recipeRepository, IIngredientsRepository ingredientsRepository, GeminiService geminiService)
         {
             InitializeComponent();
 
@@ -39,6 +40,8 @@ namespace Cook_Book
             _recipeRepository = recipeRepository;
             _ingredientRepository = ingredientsRepository;
             NutritionProgressBar.Visible = false;
+            _geminiService = geminiService;
+            _geminiService.GeminiError += errMessage => MessageBox.Show(errMessage, "Gemini Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void ErrorLogger(string exMessage)
@@ -101,7 +104,7 @@ namespace Cook_Book
             IngredientsGrid.AutoGenerateColumns = false;
 
             DataGridViewColumn[] column = new DataGridViewColumn[4];
-            column[0] = new DataGridViewTextBoxColumn() { DataPropertyName="Name", HeaderText="Ingredient" };
+            column[0] = new DataGridViewTextBoxColumn() { DataPropertyName = "Name", HeaderText = "Ingredient" };
             column[1] = new DataGridViewTextBoxColumn() { DataPropertyName = "Amount", HeaderText = "Amount" };
             column[2] = new DataGridViewTextBoxColumn() { DataPropertyName = "KcalPer100g", HeaderText = "Cal (100g)" };
             column[3] = new DataGridViewTextBoxColumn() { DataPropertyName = "PricePer100g", HeaderText = "Price (100g)" };
@@ -127,7 +130,7 @@ namespace Cook_Book
                 {
                     IngredientId = ri.IngredientId,
                     Amount = ri.Amount
-                })    
+                })
                 .ToList();
 
             List<IngredientNutritionInfo> nutritionList = new();
@@ -136,7 +139,7 @@ namespace Cook_Book
             FetchNutritionInfoBtn.Text = "Fetching...";
             Cursor = Cursors.WaitCursor;
             NutritionProgressBar.Visible = true;
-            NutritionProgressBar.Style = ProgressBarStyle.Marquee; 
+            NutritionProgressBar.Style = ProgressBarStyle.Marquee;
 
             try
             {
@@ -148,7 +151,7 @@ namespace Cook_Book
                     if (!_ingredientsToName.TryGetValue(item.IngredientId, out string ingredientName))
                         continue;
 
-                    nutritionTasks.Add(GetNutritionWithAmountAsync(ingredientName, item.Amount));                   
+                    nutritionTasks.Add(GetNutritionWithAmountAsync(ingredientName, item.Amount));
                 }
 
                 var nutritionResults = await Task.WhenAll(nutritionTasks);
@@ -164,8 +167,9 @@ namespace Cook_Book
                 TotalProteinLbl.Text = totalProtein.ToString();
 
                 NutritionGrid.DataSource = null;
-                NutritionGrid.DataSource = nutritionResults.Where(r => r!= null).ToList();
-            } catch(Exception ex)
+                NutritionGrid.DataSource = nutritionResults.Where(r => r != null).ToList();
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("Error occurred while fetching Nutritional Data from the API!", "API Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ErrorLogger("Error occurred while fetching Nutritional Data from the API: " + ex.Message);
@@ -241,7 +245,7 @@ namespace Cook_Book
                     return new
                     {
                         Name = name,
-                        Amount = Math.Round(ri.Amount,2),
+                        Amount = Math.Round(ri.Amount, 2),
                         KcalPer100g = Math.Round((ingredient?.KcalPer100g ?? 0) * ri.Amount / 100, 2),
                         PricePer100g = Math.Round((ingredient?.PricePer100g ?? 0) * ri.Amount / 100, 2)
                     };
@@ -258,6 +262,69 @@ namespace Cook_Book
                 Fat = 0,
                 Protein = 0
             }).ToList();
-        }  
+        }
+
+        private async void GenerateAdviceBtn_Click(object sender, EventArgs e)
+        {
+            if (RecipesCbx.SelectedIndex <= 0 || RecipesCbx.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a recipe first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                GenerateAdviceBtn.Enabled = false;
+                Cursor = Cursors.WaitCursor;
+                GenerateAdviceBtn.Text = "Generating...";
+
+                decimal totalCal = decimal.Parse(TotalCaloriesLbl.Text);
+                decimal totalFat = decimal.Parse(TotalFatLbl.Text);
+                decimal totalProtein = decimal.Parse(TotalProteinLbl.Text);
+                decimal totalCarbs = decimal.Parse(TotalCarbsLbl.Text);
+
+                if(totalCal == 0 && totalFat == 0 && totalProtein == 0 && totalCarbs == 0)
+                {
+                    MessageBox.Show("Please populate the grid first.", "Warning:", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string prompt = BuildNutritionPrompt(totalCal, totalFat, totalProtein, totalCarbs);
+
+                var advice = await _geminiService.GetNutritionAdviceAsync(prompt);
+
+                AdviceTxt.Text = advice;
+
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger("Error after clicking GenerateAdviceBtn. "+ex.Message);
+                MessageBox.Show("Error occurred while generating advice from Gemini.", "Advice Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                GenerateAdviceBtn.Enabled = true;
+                Cursor = Cursors.Default;
+                GenerateAdviceBtn.Text = "Generate Advice";
+            }
+        }
+
+        private string BuildNutritionPrompt(decimal totalCal, decimal totalFat, decimal totalProtein, decimal totalCarbs)
+        {
+            return $@"User profile:
+                    - Male, 20 years, 165 cm, 84 kg
+                    - Activity: Moderate
+                    - Goal: Weight loss
+
+                    1 Meal nutrition:
+                    - Calories: {totalCal}
+                    - Carbs: {totalCarbs}
+                    - Fat: {totalFat}
+                    - Protein: {totalProtein}
+
+                    Give friendly nutrition advice and recommendation tailored to this person.
+                    NB:   Make the message readable by adding spaces and starting sentences on a new line.";
+
+        }
     }
 }

@@ -261,12 +261,13 @@
             // 
             // GenerateAdviceBtn
             // 
-            GenerateAdviceBtn.Location = new Point(216, 217);
+            GenerateAdviceBtn.Location = new Point(216, 227);
             GenerateAdviceBtn.Name = "GenerateAdviceBtn";
             GenerateAdviceBtn.Size = new Size(355, 54);
             GenerateAdviceBtn.TabIndex = 1;
             GenerateAdviceBtn.Text = "Generate Advice";
             GenerateAdviceBtn.UseVisualStyleBackColor = true;
+            GenerateAdviceBtn.Click += GenerateAdviceBtn_Click;
             // 
             // AdviceTxt
             // 
@@ -275,7 +276,7 @@
             AdviceTxt.Name = "AdviceTxt";
             AdviceTxt.ReadOnly = true;
             AdviceTxt.ScrollBars = ScrollBars.Vertical;
-            AdviceTxt.Size = new Size(803, 205);
+            AdviceTxt.Size = new Size(803, 221);
             AdviceTxt.TabIndex = 0;
             // 
             // ProjectionTab
@@ -343,14 +344,14 @@
             ScrollPanel.Dock = DockStyle.Fill;
             ScrollPanel.Location = new Point(0, 0);
             ScrollPanel.Name = "ScrollPanel";
-            ScrollPanel.Size = new Size(866, 750);
+            ScrollPanel.Size = new Size(866, 783);
             ScrollPanel.TabIndex = 1;
             // 
             // HealthAnalysisForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(866, 750);
+            ClientSize = new Size(866, 783);
             Controls.Add(ScrollPanel);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Margin = new Padding(4);
