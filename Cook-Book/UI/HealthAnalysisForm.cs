@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cook_Book.Services.API_s;
+using Cook_Book.UI;
 using DataAccessLayer.CustomQueryResults;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Logging;
@@ -289,12 +290,8 @@ namespace Cook_Book
                     return;
                 }
 
-                string prompt = BuildNutritionPrompt(totalCal, totalFat, totalProtein, totalCarbs);
-
-                var advice = await _geminiService.GetNutritionAdviceAsync(prompt);
-
-                AdviceTxt.Text = advice;
-
+                UserProfileForm form = new UserProfileForm(_geminiService, totalCal, totalCarbs, totalFat, totalProtein);
+                form.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -307,24 +304,6 @@ namespace Cook_Book
                 Cursor = Cursors.Default;
                 GenerateAdviceBtn.Text = "Generate Advice";
             }
-        }
-
-        private string BuildNutritionPrompt(decimal totalCal, decimal totalFat, decimal totalProtein, decimal totalCarbs)
-        {
-            return $@"User profile:
-                    - Male, 20 years, 165 cm, 84 kg
-                    - Activity: Moderate
-                    - Goal: Weight loss
-
-                    1 Meal nutrition:
-                    - Calories: {totalCal}
-                    - Carbs: {totalCarbs}
-                    - Fat: {totalFat}
-                    - Protein: {totalProtein}
-
-                    Give friendly nutrition advice and recommendation tailored to this person.
-                    NB:   Make the message readable by adding spaces and starting sentences on a new line.";
-
         }
     }
 }

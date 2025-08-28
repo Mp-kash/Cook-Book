@@ -50,7 +50,7 @@ namespace Cook_Book.Services.API_s
                     generationConfig = new
                     {
                         temperature = 0.7,
-                        maxOutputTokens = 500,
+                        maxOutputTokens = 650,
                         topP = 0.8
                     }
                 };
