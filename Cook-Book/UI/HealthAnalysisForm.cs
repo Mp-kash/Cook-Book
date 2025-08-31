@@ -14,6 +14,7 @@ using DataAccessLayer.Interfaces;
 using DataAccessLayer.Logging;
 using DomainModel.Models;
 using DomainModels.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 
 namespace Cook_Book
@@ -22,6 +23,8 @@ namespace Cook_Book
     {
         private readonly USDAApiService _usdaApiService;
         private readonly GeminiService _geminiService;
+        private readonly StabilityAIService _stabilityAIService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IRecipeIngredientRepository _recipeIngredientRepository;
         private readonly IRecipeRepository _recipeRepository;
         private readonly IIngredientsRepository _ingredientRepository;
@@ -32,17 +35,24 @@ namespace Cook_Book
         private Dictionary<int, string> _recipesToName = new();
         private Dictionary<int, string> _ingredientsToName = new();
 
-        public HealthAnalysisForm(USDAApiService usdaApiService, IRecipeIngredientRepository recipeIngredientRepository, IRecipeRepository recipeRepository, IIngredientsRepository ingredientsRepository, GeminiService geminiService)
+        public HealthAnalysisForm(IServiceProvider serviceProvider, IRecipeIngredientRepository recipeIngredientRepository, IRecipeRepository recipeRepository, IIngredientsRepository ingredientsRepository)
         {
             InitializeComponent();
 
-            _usdaApiService = usdaApiService;
+            // making the constructor parameters more cleaner
+            _serviceProvider = serviceProvider;
+
+            _usdaApiService = _serviceProvider.GetRequiredService<USDAApiService>();
+            _geminiService = _serviceProvider.GetRequiredService<GeminiService>();
+            _stabilityAIService = _serviceProvider.GetRequiredService<StabilityAIService>();    
+
             _recipeIngredientRepository = recipeIngredientRepository;
             _recipeRepository = recipeRepository;
             _ingredientRepository = ingredientsRepository;
             NutritionProgressBar.Visible = false;
-            _geminiService = geminiService;
+
             _geminiService.GeminiError += errMessage => MessageBox.Show(errMessage, "Gemini Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            _stabilityAIService.ErrorOccurred += errMessage => MessageBox.Show(errMessage, "StabilityAI Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void ErrorLogger(string exMessage)
@@ -265,7 +275,7 @@ namespace Cook_Book
             }).ToList();
         }
 
-        private async void GenerateAdviceBtn_Click(object sender, EventArgs e)
+        private void GenerateAdviceBtn_Click(object sender, EventArgs e)
         {
             if (RecipesCbx.SelectedIndex <= 0 || RecipesCbx.SelectedItem == null)
             {
@@ -290,7 +300,9 @@ namespace Cook_Book
                     return;
                 }
 
-                UserProfileForm form = new UserProfileForm(_geminiService, totalCal, totalCarbs, totalFat, totalProtein);
+                // Used the short way in case their were other DI services to be added. Makes code more cleaner
+
+                UserProfileForm form = ActivatorUtilities.CreateInstance<UserProfileForm> (_serviceProvider, totalCal, totalCarbs, totalFat, totalProtein);
                 form.ShowDialog();
             }
             catch (Exception ex)

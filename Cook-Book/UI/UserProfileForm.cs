@@ -22,16 +22,21 @@ namespace Cook_Book.UI
         public string ActivityLevel { get; set; }
 
         private readonly GeminiService _geminiService;
+        private readonly StabilityAIService _stabilityAIService;
 
         private decimal _totalCal;
         private decimal _totalCarbs;
         private decimal _totalFats;
         private decimal _totalProteins;
+
+        private string _successImage;
+        private string _failureImage;
         
-        public UserProfileForm(GeminiService geminiService, decimal totalCal, decimal totalCarbs, decimal totalFats, decimal totalProteins)
+        public UserProfileForm(GeminiService geminiService, StabilityAIService stabilityAIService, decimal totalCal, decimal totalCarbs, decimal totalFats, decimal totalProteins)
         {
             InitializeComponent();
             _geminiService = geminiService;
+            _stabilityAIService = stabilityAIService;
 
             _totalCal = totalCal;
             _totalCarbs = totalCarbs;
@@ -42,8 +47,29 @@ namespace Cook_Book.UI
         private void UserProfileForm_Load(object sender, EventArgs e)
         {
             LoadCombobox();
-            LoadInputs();
-        }      
+            LoadInputs();           
+        }
+
+        private async Task GenerateTrasnformationVisualization()
+        {
+            try
+            {
+                var successTask = _stabilityAIService.GenerateBodyTransformationImage((int)Age, GenderInput, Goal, "success");
+
+                var failureTask = _stabilityAIService.GenerateBodyTransformationImage((int)Age, GenderInput, Goal, "failure");
+
+                await Task.WhenAll(successTask, failureTask);
+
+                _successImage = await successTask;
+                _failureImage = await failureTask;
+
+            } catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Log(ex.Message, DateTime.Now);
+            }
+        }
+
 
         private bool ValidateInputs()
         {
@@ -133,7 +159,9 @@ namespace Cook_Book.UI
                 
                 string advice = await _geminiService.GetNutritionAdviceAsync(prompt);
 
-                GeminiForm form = new GeminiForm(advice);
+                await GenerateTrasnformationVisualization();
+
+                GeminiForm form = new GeminiForm(advice, _successImage, _failureImage);
                 form.Show();
                 this.Close();
             }
@@ -176,7 +204,8 @@ namespace Cook_Book.UI
                 5. Exercise recommendations
                 6. Weekly progress tracking tips
 
-                Make the advice specific, actionable, concise and scientifically sound.";
+                Make the advice specific, actionable, concise and scientifically sound.
+                NB: Max Output Token < 650.";
         }
     }
 }

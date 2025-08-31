@@ -261,7 +261,7 @@
             // 
             // GenerateAdviceBtn
             // 
-            GenerateAdviceBtn.Location = new Point(216, 227);
+            GenerateAdviceBtn.Location = new Point(231, 217);
             GenerateAdviceBtn.Name = "GenerateAdviceBtn";
             GenerateAdviceBtn.Size = new Size(355, 54);
             GenerateAdviceBtn.TabIndex = 1;
@@ -276,7 +276,7 @@
             AdviceTxt.Name = "AdviceTxt";
             AdviceTxt.ReadOnly = true;
             AdviceTxt.ScrollBars = ScrollBars.Vertical;
-            AdviceTxt.Size = new Size(803, 221);
+            AdviceTxt.Size = new Size(803, 205);
             AdviceTxt.TabIndex = 0;
             // 
             // ProjectionTab

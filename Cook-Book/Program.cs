@@ -41,6 +41,7 @@ namespace Cook_Book.UI
             services.AddTransient<HomeForm>();
             services.AddTransient<SecretForm>();
             services.AddTransient<HealthAnalysisForm>();
+            services.AddTransient<UserProfileForm>();
 
             // Register services
             services.AddTransient<FoodManagerCache>();
@@ -48,8 +49,11 @@ namespace Cook_Book.UI
             services.AddSingleton<ThemeChanger>(ThemeChanger.Instance);
             string USDAKey = ConfigurationManager.AppSettings["USDAApiKey"];
             string GeminiKey = ConfigurationManager.AppSettings["Gemini"];
+            string StabilityAIKey = ConfigurationManager.AppSettings["StabilityAI"];
+
             services.AddSingleton<USDAApiService>(provider => new USDAApiService(USDAKey));
             services.AddSingleton(new GeminiService(GeminiKey));
+            services.AddSingleton(new  StabilityAIService(StabilityAIKey));
 
             // Build provider
             ServiceProvider serviceProvider = services.BuildServiceProvider();
