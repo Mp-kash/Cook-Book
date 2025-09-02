@@ -8,7 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cook_Book.Helper;
+using Cook_Book.Services;
 using DataAccessLayer.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Cook_Book.UI
 {
@@ -20,6 +22,10 @@ namespace Cook_Book.UI
         public GeminiForm(string advice, string successImage, string failureImage)
         {
             InitializeComponent();
+
+            ShowForm();
+            ApplyStyles(ThemeChanger.Instance.CurrentTheme);
+
             AdviceRichTxt.Text = advice;
             _successImageBase64 = successImage;
             _failureImageBase64 = failureImage;
@@ -71,14 +77,13 @@ namespace Cook_Book.UI
                     {
                         string timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
-                        if (SuccessImageBox.Image != null)
+                        if (SuccessImageBox.Image != null && SuccessImageBox.Image.Width > 0 && SuccessImageBox.Image.Height > 0)
                         {
                             string successPath = Path.Combine(folderDialog.SelectedPath, $"success_{timeStamp}.png");
 
                             SuccessImageBox.Image.Save(successPath, System.Drawing.Imaging.ImageFormat.Png);
                         }
-
-                        if (FailureImageBox.Image != null)
+                        else if (FailureImageBox.Image != null && FailureImageBox.Image.Width > 0 && FailureImageBox.Image.Height > 0)
                         {
                             string failurePath = Path.Combine(folderDialog.SelectedPath, $"failure_{timeStamp}.png");
 
@@ -86,18 +91,71 @@ namespace Cook_Book.UI
                         }
 
                         MessageBox.Show("Images saved successfully", "Success:");
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Logger.Log(ex.Message, DateTime.Now);
                     }
                 }
-            }
+            }            
         }
 
         private void SaveImagesBtn_Click(object sender, EventArgs e)
         {
-            SaveImages();
+            if (SuccessImageBox.Image == null || FailureImageBox.Image == null)
+            {
+                MessageBox.Show("No image displayed.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+                SaveImages();
+        }
+
+        private void ShowForm()
+        {
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.Text = "Gemini AI";
+        }
+
+        private void ApplyStyles(int? theme = 1)
+        {
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(theme);
+
+            string primaryBgr = themeConfig["primaryBgr"]?.ToString() ?? "#FFFFFF";
+            string secondaryBgr = themeConfig["secondaryBgr"]?.ToString() ?? "#F0F0F0";
+            string primaryFgr = themeConfig["primaryFgr"]?.ToString() ?? "#000000";
+
+            // buttons Bgr color
+            string primaryBtnBgr = themeConfig["primaryBtnBgr"]?.ToString() ?? "#007BFF";
+            string secondaryBtnBgr = themeConfig["secondaryBtnBgr"]?.ToString() ?? "#6C757D";
+            string tertiaryBtnBgr = themeConfig["tertiaryBtnBgr"]?.ToString() ?? "#28A745";
+            string classicBtnBgr = themeConfig["classicBtnBgr"]?.ToString() ?? "#DC3545";
+            string disabledTertiaryBtnBgr = themeConfig["disabledTertiaryBtnBgr"]?.ToString() ?? "#d6c0ad";
+
+            // buttons Fgr color
+            string primaryBtnFgr = themeConfig["primaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string secondaryBtnFgr = themeConfig["secondaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string tertiaryBtnFgr = themeConfig["tertiaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string inputBgr = themeConfig["inputBgr"]?.ToString() ?? "#2b3b53";
+
+            groupBox1.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            groupBox1.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            AdviceRichTxt.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            AdviceRichTxt.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            AIAdvicePage.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            AIProjectionPage.BackColor = ColorTranslator.FromHtml(primaryBgr);
+
+            SuccessLbl.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            FailureLbl.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+
+            SaveImagesBtn.BackColor = ColorTranslator.FromHtml(classicBtnBgr);
+            SaveImagesBtn.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            this.BackColor = ColorTranslator.FromHtml(secondaryBgr);
         }
     }
 }

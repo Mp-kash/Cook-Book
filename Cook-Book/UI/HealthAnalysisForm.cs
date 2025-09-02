@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Cook_Book.Services;
 using Cook_Book.Services.API_s;
 using Cook_Book.UI;
 using DataAccessLayer.CustomQueryResults;
@@ -39,12 +40,15 @@ namespace Cook_Book
         {
             InitializeComponent();
 
+            ApplyStyles(ThemeChanger.Instance.CurrentTheme);
+            this.DoubleBuffered = true; 
+
             // making the constructor parameters more cleaner
             _serviceProvider = serviceProvider;
 
             _usdaApiService = _serviceProvider.GetRequiredService<USDAApiService>();
             _geminiService = _serviceProvider.GetRequiredService<GeminiService>();
-            _stabilityAIService = _serviceProvider.GetRequiredService<StabilityAIService>();    
+            _stabilityAIService = _serviceProvider.GetRequiredService<StabilityAIService>();
 
             _recipeIngredientRepository = recipeIngredientRepository;
             _recipeRepository = recipeRepository;
@@ -72,11 +76,13 @@ namespace Cook_Book
             CustomizeGridAppearance2();
         }
 
-        private void CustomizeGridAppearance()
+        private void CustomizeGridAppearance(int? theme = 1)
         {
             NutritionGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             NutritionGrid.RowHeadersVisible = false;
             NutritionGrid.AutoGenerateColumns = false;
+
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(theme);
 
             DataGridViewColumn[] column = new DataGridViewColumn[5];
             column[0] = new DataGridViewTextBoxColumn
@@ -108,11 +114,13 @@ namespace Cook_Book
             NutritionGrid.Columns.AddRange(column);
         }
 
-        private void CustomizeGridAppearance2()
+        private void CustomizeGridAppearance2(int? theme2 = 1)
         {
             IngredientsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             IngredientsGrid.AutoGenerateColumns = false;
+
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(theme2);
 
             DataGridViewColumn[] column = new DataGridViewColumn[4];
             column[0] = new DataGridViewTextBoxColumn() { DataPropertyName = "Name", HeaderText = "Ingredient" };
@@ -294,7 +302,7 @@ namespace Cook_Book
                 decimal totalProtein = decimal.Parse(TotalProteinLbl.Text);
                 decimal totalCarbs = decimal.Parse(TotalCarbsLbl.Text);
 
-                if(totalCal == 0 && totalFat == 0 && totalProtein == 0 && totalCarbs == 0)
+                if (totalCal == 0 && totalFat == 0 && totalProtein == 0 && totalCarbs == 0)
                 {
                     MessageBox.Show("Please populate the grid first.", "Warning:", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -302,12 +310,12 @@ namespace Cook_Book
 
                 // Used the short way in case their were other DI services to be added. Makes code more cleaner
 
-                UserProfileForm form = ActivatorUtilities.CreateInstance<UserProfileForm> (_serviceProvider, totalCal, totalCarbs, totalFat, totalProtein);
+                UserProfileForm form = ActivatorUtilities.CreateInstance<UserProfileForm>(_serviceProvider, totalCal, totalCarbs, totalFat, totalProtein);
                 form.ShowDialog();
             }
             catch (Exception ex)
             {
-                ErrorLogger("Error after clicking GenerateAdviceBtn. "+ex.Message);
+                ErrorLogger("Error after clicking GenerateAdviceBtn. " + ex.Message);
                 MessageBox.Show("Error occurred while generating advice from Gemini.", "Advice Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -315,6 +323,156 @@ namespace Cook_Book
                 GenerateAdviceBtn.Enabled = true;
                 Cursor = Cursors.Default;
                 GenerateAdviceBtn.Text = "Generate Advice";
+            }
+        }
+
+        private void ApplyStyles(int? theme = 1)
+        {
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(theme);
+
+            string primaryBgr = themeConfig["primaryBgr"]?.ToString() ?? "#FFFFFF";
+            string secondaryBgr = themeConfig["secondaryBgr"]?.ToString() ?? "#F0F0F0";
+            string primaryFgr = themeConfig["primaryFgr"]?.ToString() ?? "#000000";
+
+            // buttons Bgr color
+            string primaryBtnBgr = themeConfig["primaryBtnBgr"]?.ToString() ?? "#007BFF";
+            string secondaryBtnBgr = themeConfig["secondaryBtnBgr"]?.ToString() ?? "#6C757D";
+            string tertiaryBtnBgr = themeConfig["tertiaryBtnBgr"]?.ToString() ?? "#28A745";
+            string classicBtnBgr = themeConfig["classicBtnBgr"]?.ToString() ?? "#DC3545";
+            string disabledTertiaryBtnBgr = themeConfig["disabledTertiaryBtnBgr"]?.ToString() ?? "#d6c0ad";
+
+            // buttons Fgr color
+            string primaryBtnFgr = themeConfig["primaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string secondaryBtnFgr = themeConfig["secondaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string tertiaryBtnFgr = themeConfig["tertiaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string inputBgr = themeConfig["inputBgr"]?.ToString() ?? "#2b3b53";
+
+            groupBox1.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            groupBox1.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            groupBox2.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            groupBox2.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            AIAdviceTab.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            ProjectionTab.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            AdviceTxt.BackColor = ColorTranslator.FromHtml(primaryBgr);
+
+            ThemedTabControl.GlobalActiveBackColor = ColorTranslator.FromHtml(secondaryBgr);
+            ThemedTabControl.GlobalInactiveBackColor = ColorTranslator.FromHtml(primaryBgr);
+            ThemedTabControl.GlobalActiveForeColor = ColorTranslator.FromHtml(secondaryBtnFgr);
+            ThemedTabControl.GlobalInactiveForeColor = ColorTranslator.FromHtml(secondaryBtnFgr);
+            ThemedTabControl.GlobalPageBackColor = ColorTranslator.FromHtml(primaryBgr);
+            ThemedTabControl.GlobalBorderColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            FetchNutritionInfoBtn.BackColor = ColorTranslator.FromHtml(secondaryBtnBgr);
+            FetchNutritionInfoBtn.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            GenerateAdviceBtn.BackColor = ColorTranslator.FromHtml(primaryBtnBgr);
+            GenerateAdviceBtn.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            GenerateProjectionBtn.BackColor = ColorTranslator.FromHtml(primaryBtnBgr);
+            GenerateProjectionBtn.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            label1.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            label2.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+
+            label3.ForeColor = ColorTranslator.FromHtml (primaryFgr);
+            label4.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            label7.ForeColor = ColorTranslator.FromHtml (primaryFgr);
+            label8.ForeColor =ColorTranslator.FromHtml (primaryFgr);
+
+            if(theme != 1)
+            {
+                TotalCaloriesLbl.ForeColor = ColorTranslator.FromHtml("#e88f41");
+                TotalCarbsLbl.ForeColor = ColorTranslator.FromHtml("#e88f41");
+                TotalProteinLbl.ForeColor = ColorTranslator.FromHtml("#e88f41");
+                TotalFatLbl.ForeColor = ColorTranslator.FromHtml("#e88f41");
+            }
+
+            NutritionGrid.BackgroundColor = ColorTranslator.FromHtml(primaryBgr);
+            IngredientsGrid.BackgroundColor = ColorTranslator.FromHtml(primaryBgr);
+            NutritionGrid.ColumnHeadersDefaultCellStyle.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            IngredientsGrid.ColumnHeadersDefaultCellStyle.BackColor = ColorTranslator.FromHtml(secondaryBgr);
+            NutritionGrid.ColumnHeadersDefaultCellStyle.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            IngredientsGrid.ColumnHeadersDefaultCellStyle.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+
+            NutritionGrid.DefaultCellStyle.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            IngredientsGrid.DefaultCellStyle.BackColor = ColorTranslator.FromHtml(primaryBgr);
+            NutritionGrid.DefaultCellStyle.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            IngredientsGrid.DefaultCellStyle.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            NutritionGrid.DefaultCellStyle.SelectionBackColor = Color.SteelBlue;
+            IngredientsGrid.DefaultCellStyle.SelectionBackColor = Color.SteelBlue;
+
+            this.BackColor = ColorTranslator.FromHtml(primaryBgr);
+
+            StyleComboBox(RecipesCbx, inputBgr, primaryBtnFgr, primaryBgr, primaryBtnFgr);
+        }
+
+        private void StyleComboBox(ComboBox comboBox, string backColor, string foreColor, string selectionBgr, string selectionFgr)
+        {
+            comboBox.BackColor = ColorTranslator.FromHtml(backColor);
+            comboBox.ForeColor = ColorTranslator.FromHtml(foreColor);
+
+            comboBox.DrawMode = DrawMode.OwnerDrawFixed;
+            comboBox.FlatStyle = FlatStyle.Flat;
+
+            comboBox.DrawItem -= ComboBox_DrawItem;
+            comboBox.DropDownClosed -= ComboBox_DropDownClosed;
+            comboBox.DrawItem += ComboBox_DrawItem;
+            comboBox.DropDownClosed += ComboBox_DropDownClosed;
+
+            comboBox.Tag = new
+            {
+                BackColor = ColorTranslator.FromHtml(backColor),
+                ForeColor = ColorTranslator.FromHtml(foreColor),
+                SelectionBackColor = ColorTranslator.FromHtml(selectionBgr),
+                SelectionForeColor = ColorTranslator.FromHtml(selectionFgr),
+                HoverBackColor = ColorTranslator.FromHtml(selectionBgr),
+                HoverForeColor = ColorTranslator.FromHtml(selectionFgr)
+            };
+        }
+
+        private void ComboBox_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (sender is not ComboBox comboBox) return;
+
+            var colors = comboBox.Tag as dynamic;
+            if (colors == null) return;
+
+            e.DrawBackground();
+
+            if (e.Index < 0)
+            {
+                using (Brush backBrush = new SolidBrush(colors.BackColor),
+                     foreBrush = new SolidBrush(colors.ForeColor))
+                {
+                    e.Graphics.FillRectangle(backBrush, e.Bounds);
+                    e.Graphics.DrawString(comboBox.Text, e.Font, foreBrush, e.Bounds);
+                }
+                return;
+            }
+
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+            Color backColor, foreColor;
+
+            backColor = isSelected ? ColorTranslator.FromHtml("#2C4E78") : colors.BackColor;
+            foreColor = isSelected ? ColorTranslator.FromHtml("#ffffff") : colors.ForeColor;
+
+            using (Brush backBrush = new SolidBrush(backColor),
+                   foreBrush = new SolidBrush(foreColor))
+            {
+                e.Graphics.FillRectangle(backBrush, e.Bounds);
+                e.Graphics.DrawString(comboBox.Items[e.Index].ToString() ?? string.Empty, e.Font, foreBrush, e.Bounds);
+            }
+
+            if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
+            {
+                e.DrawFocusRectangle();
+            }
+        }
+
+        private void ComboBox_DropDownClosed(object? sender, EventArgs e)
+        {
+            if (sender is ComboBox comboBox)
+            {
+                comboBox.Invalidate();
             }
         }
     }

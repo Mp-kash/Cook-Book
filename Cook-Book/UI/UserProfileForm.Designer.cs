@@ -48,36 +48,40 @@
             // label2
             // 
             label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label2.Location = new Point(23, 230);
             label2.Name = "label2";
-            label2.Size = new Size(72, 38);
+            label2.Size = new Size(75, 38);
             label2.TabIndex = 1;
             label2.Text = "Age:";
             // 
             // label3
             // 
             label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label3.Location = new Point(23, 301);
             label3.Name = "label3";
-            label3.Size = new Size(114, 38);
+            label3.Size = new Size(118, 38);
             label3.TabIndex = 2;
             label3.Text = "Gender:";
             // 
             // label4
             // 
             label4.AutoSize = true;
+            label4.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label4.Location = new Point(2, 377);
             label4.Name = "label4";
-            label4.Size = new Size(186, 38);
+            label4.Size = new Size(191, 38);
             label4.TabIndex = 3;
             label4.Text = "Height in Cm:";
             // 
             // label5
             // 
             label5.AutoSize = true;
+            label5.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label5.Location = new Point(2, 460);
             label5.Name = "label5";
-            label5.Size = new Size(182, 38);
+            label5.Size = new Size(188, 38);
             label5.TabIndex = 4;
             label5.Text = "Weight in Kg:";
             // 
@@ -110,6 +114,7 @@
             // GoalCbx
             // 
             GoalCbx.DropDownStyle = ComboBoxStyle.DropDownList;
+            GoalCbx.FlatStyle = FlatStyle.Flat;
             GoalCbx.FormattingEnabled = true;
             GoalCbx.Location = new Point(22, 83);
             GoalCbx.Margin = new Padding(3, 4, 3, 4);
@@ -120,6 +125,7 @@
             // ActivityCbx
             // 
             ActivityCbx.DropDownStyle = ComboBoxStyle.DropDownList;
+            ActivityCbx.FlatStyle = FlatStyle.Flat;
             ActivityCbx.FormattingEnabled = true;
             ActivityCbx.Location = new Point(22, 146);
             ActivityCbx.Margin = new Padding(3, 4, 3, 4);
@@ -129,6 +135,9 @@
             // 
             // SubmitButton
             // 
+            SubmitButton.FlatAppearance.BorderSize = 0;
+            SubmitButton.FlatStyle = FlatStyle.Flat;
+            SubmitButton.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
             SubmitButton.Location = new Point(155, 521);
             SubmitButton.Name = "SubmitButton";
             SubmitButton.Size = new Size(301, 52);
@@ -140,6 +149,7 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.BackColor = Color.Transparent;
             label1.Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
             label1.Location = new Point(143, 9);
             label1.Name = "label1";
@@ -160,6 +170,7 @@
             // 
             AutoScaleDimensions = new SizeF(15F, 38F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(45, 66, 91);
             ClientSize = new Size(557, 576);
             Controls.Add(HeightNumeric);
             Controls.Add(label1);

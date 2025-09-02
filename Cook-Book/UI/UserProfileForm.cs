@@ -7,8 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Cook_Book.Services;
 using Cook_Book.Services.API_s;
 using DataAccessLayer.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Cook_Book.UI
 {
@@ -35,6 +37,10 @@ namespace Cook_Book.UI
         public UserProfileForm(GeminiService geminiService, StabilityAIService stabilityAIService, decimal totalCal, decimal totalCarbs, decimal totalFats, decimal totalProteins)
         {
             InitializeComponent();
+
+            ShowForm();
+            ApplyStyles(ThemeChanger.Instance.CurrentTheme);
+
             _geminiService = geminiService;
             _stabilityAIService = stabilityAIService;
 
@@ -73,24 +79,6 @@ namespace Cook_Book.UI
 
         private bool ValidateInputs()
         {
-            if (AgeNumeric.Value == 0 || AgeNumeric.Value > 100)
-            {
-                MessageBox.Show($"{AgeNumeric.Value} yrs is not a reasonable age.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                AgeNumeric.Focus();
-                return false;
-            }
-            if (WeightNumeric.Value == 0 || WeightNumeric.Value > 635)
-            {
-                MessageBox.Show($"{WeightNumeric.Value} kg is not a reasonable weight.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                WeightNumeric.Focus();
-                return false;
-            }
-            if (HeightNumeric.Value == 0 || HeightNumeric.Value > 251)
-            {
-                MessageBox.Show($"{HeightNumeric} cm is not a reasonable height.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                HeightNumeric.Focus();
-                return false;
-            }
             if (GoalCbx.SelectedIndex == 0)
             {
                 MessageBox.Show("Invalid fitness goal!", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -103,12 +91,30 @@ namespace Cook_Book.UI
                 ActivityCbx.Focus();
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(AgeNumeric.Text))
+            if (AgeNumeric.Value == 0 || AgeNumeric.Value > 100)
+            {
+                MessageBox.Show($"{AgeNumeric.Value} yrs is not a reasonable age.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                AgeNumeric.Focus();
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(GenderTxt.Text))
             {
                 MessageBox.Show("Please enter your gender.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 GenderTxt.Focus();
                 return false;
-            }
+            }           
+            if (HeightNumeric.Value == 0 || HeightNumeric.Value > 251)
+            {
+                MessageBox.Show($"{HeightNumeric} cm is not a reasonable height.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                HeightNumeric.Focus();
+                return false;
+            }          
+            if (WeightNumeric.Value == 0 || WeightNumeric.Value > 635)
+            {
+                MessageBox.Show($"{WeightNumeric.Value} kg is not a reasonable weight.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                WeightNumeric.Focus();
+                return false;
+            }            
 
             return true;
         }
@@ -154,6 +160,7 @@ namespace Cook_Book.UI
 
                 SubmitButton.Enabled = false;
                 SubmitButton.Text = "Submitting...";
+                Cursor = Cursors.WaitCursor;
 
                 string prompt = GeneratePersonalizedPrompt(); 
                 
@@ -174,6 +181,7 @@ namespace Cook_Book.UI
             {
                 SubmitButton.Enabled = true;
                 SubmitButton.Text = "Submit";
+                Cursor= Cursors.Default;
             }
         }
 
@@ -206,6 +214,135 @@ namespace Cook_Book.UI
 
                 Make the advice specific, actionable, concise and scientifically sound.
                 NB: Max Output Token < 650.";
+        }
+
+        private void ShowForm()
+        {
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.Text = "User Profile";
+        }
+
+        private void ApplyStyles(int? theme = 1)
+        {
+            JObject themeConfig = themeConfigManager.LoadThemeConfig(theme);
+
+            string primaryBgr = themeConfig["primaryBgr"]?.ToString() ?? "#FFFFFF";
+            string secondaryBgr = themeConfig["secondaryBgr"]?.ToString() ?? "#F0F0F0";
+            string primaryFgr = themeConfig["primaryFgr"]?.ToString() ?? "#000000";
+
+            // buttons Bgr color
+            string primaryBtnBgr = themeConfig["primaryBtnBgr"]?.ToString() ?? "#007BFF";
+            string secondaryBtnBgr = themeConfig["secondaryBtnBgr"]?.ToString() ?? "#6C757D";
+            string tertiaryBtnBgr = themeConfig["tertiaryBtnBgr"]?.ToString() ?? "#28A745";
+            string classicBtnBgr = themeConfig["classicBtnBgr"]?.ToString() ?? "#DC3545";
+            string disabledTertiaryBtnBgr = themeConfig["disabledTertiaryBtnBgr"]?.ToString() ?? "#d6c0ad";
+
+            // buttons Fgr color
+            string primaryBtnFgr = themeConfig["primaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string secondaryBtnFgr = themeConfig["secondaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string tertiaryBtnFgr = themeConfig["tertiaryBtnFgr"]?.ToString() ?? "#FFFFFF";
+            string inputBgr = themeConfig["inputBgr"]?.ToString() ?? "#2b3b53";
+
+            label1.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+            label2.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            label3.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            label4.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+            label5.ForeColor = ColorTranslator.FromHtml(primaryFgr);
+
+            AgeNumeric.BackColor = ColorTranslator.FromHtml(inputBgr);
+            AgeNumeric.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            GenderTxt.BackColor = ColorTranslator.FromHtml(inputBgr);
+            GenderTxt.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            HeightNumeric.BackColor = ColorTranslator.FromHtml(inputBgr);
+            HeightNumeric.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            WeightNumeric.BackColor = ColorTranslator.FromHtml(inputBgr);
+            WeightNumeric.ForeColor = ColorTranslator.FromHtml(primaryBtnFgr);
+
+            SubmitButton.BackColor = ColorTranslator.FromHtml(tertiaryBtnBgr);
+            SubmitButton.ForeColor = ColorTranslator.FromHtml(tertiaryBtnFgr);
+
+            this.BackColor = ColorTranslator.FromHtml(primaryBgr);
+
+            StyleComboBox(GoalCbx, inputBgr, primaryBtnFgr, primaryBgr, primaryBtnFgr);
+            StyleComboBox(ActivityCbx, inputBgr, primaryBtnFgr, primaryBgr, primaryBtnFgr);
+        }
+
+        private void StyleComboBox(ComboBox comboBox, string backColor, string foreColor, string selectionBgr, string selectionFgr)
+        {
+            comboBox.BackColor = ColorTranslator.FromHtml(backColor);
+            comboBox.ForeColor = ColorTranslator.FromHtml(foreColor);
+
+            comboBox.DrawMode = DrawMode.OwnerDrawFixed;
+            comboBox.FlatStyle = FlatStyle.Flat;
+
+            comboBox.DrawItem -= ComboBox_DrawItem;
+            comboBox.DropDownClosed -= ComboBox_DropDownClosed;
+            comboBox.DrawItem += ComboBox_DrawItem;
+            comboBox.DropDownClosed += ComboBox_DropDownClosed;
+
+            comboBox.Tag = new
+            {
+                BackColor = ColorTranslator.FromHtml(backColor),
+                ForeColor = ColorTranslator.FromHtml(foreColor),
+                SelectionBackColor = ColorTranslator.FromHtml(selectionBgr),
+                SelectionForeColor = ColorTranslator.FromHtml(selectionFgr),
+                HoverBackColor = ColorTranslator.FromHtml(selectionBgr),
+                HoverForeColor = ColorTranslator.FromHtml(selectionFgr)
+            };
+        }
+
+        private void ComboBox_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (sender is not ComboBox comboBox) return;
+
+            var colors = comboBox.Tag as dynamic;
+            if (colors == null) return;
+
+            e.DrawBackground();
+
+            if (e.Index < 0)
+            {
+                using (Brush backBrush = new SolidBrush(colors.BackColor),
+                     foreBrush = new SolidBrush(colors.ForeColor))
+                {
+                    e.Graphics.FillRectangle(backBrush, e.Bounds);
+                    e.Graphics.DrawString(comboBox.Text, e.Font, foreBrush, e.Bounds);
+                }
+                return;
+            }
+
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+            Color backColor, foreColor;
+
+            backColor = isSelected ? ColorTranslator.FromHtml("#2C4E78") : colors.BackColor;
+            foreColor = isSelected ? ColorTranslator.FromHtml("#ffffff") : colors.ForeColor;
+
+            using (Brush backBrush = new SolidBrush(backColor),
+                   foreBrush = new SolidBrush(foreColor))
+            {
+                e.Graphics.FillRectangle(backBrush, e.Bounds);
+                e.Graphics.DrawString(comboBox.Items[e.Index].ToString() ?? string.Empty, e.Font, foreBrush, e.Bounds);
+            }
+
+            if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
+            {
+                e.DrawFocusRectangle();
+            }
+        }
+
+        private void ComboBox_DropDownClosed(object? sender, EventArgs e)
+        {
+            if (sender is ComboBox comboBox)
+            {
+                comboBox.Invalidate();
+            }
         }
     }
 }
