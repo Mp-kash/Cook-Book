@@ -10,8 +10,10 @@ using System.Windows.Forms;
 using Cook_Book.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using Nutrition_FitnessApp;
+using Nutrition_FitnessApp.Services;
 
-namespace Cook_Book.UI
+namespace Nutrition_FitnessApp.UI
 {
     public partial class HomeForm : Form
     {

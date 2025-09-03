@@ -9,14 +9,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cook_Book.Helper;
 using Cook_Book.Services;
+using Cook_Book.UI;
 using DataAccessLayer.CustomQueryResults;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Logging;
 using DomainModel.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using Nutrition_FitnessApp.Services;
 
-namespace Cook_Book.UI
+namespace Nutrition_FitnessApp.UI
 {
     public partial class RecipesForm : Form
     {

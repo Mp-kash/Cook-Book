@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Cook_Book.Services
+namespace Nutrition_FitnessApp.Services
 {
     public class ThemedTabControl : TabControl
     {

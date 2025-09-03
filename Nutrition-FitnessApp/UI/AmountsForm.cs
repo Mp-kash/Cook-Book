@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Cook_Book.UI
+namespace Nutrition_FitnessApp.UI
 {
     public partial class AmountsForm : Form
     {

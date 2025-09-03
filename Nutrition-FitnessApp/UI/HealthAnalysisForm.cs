@@ -17,8 +17,9 @@ using DomainModel.Models;
 using DomainModels.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using Nutrition_FitnessApp.Services;
 
-namespace Cook_Book
+namespace Nutrition_FitnessApp.UI
 {
     public partial class HealthAnalysisForm : Form
     {

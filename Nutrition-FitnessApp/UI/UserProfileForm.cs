@@ -11,8 +11,9 @@ using Cook_Book.Services;
 using Cook_Book.Services.API_s;
 using DataAccessLayer.Logging;
 using Newtonsoft.Json.Linq;
+using Nutrition_FitnessApp.Services;
 
-namespace Cook_Book.UI
+namespace Nutrition_FitnessApp.UI
 {
     public partial class UserProfileForm : Form
     {

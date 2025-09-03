@@ -9,7 +9,7 @@ using DataAccessLayer.Interfaces;
 using DomainModel.Models;
 using DomainModels.Models;
 
-namespace Cook_Book.Services
+namespace Nutrition_FitnessApp.Services
 {
     public class FoodManagerCache
     {

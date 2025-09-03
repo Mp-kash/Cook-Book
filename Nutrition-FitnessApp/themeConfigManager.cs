@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Cook_Book.Services;
 using Newtonsoft.Json.Linq;
 
-namespace Cook_Book
+namespace Nutrition_FitnessApp
 {
     public static class themeConfigManager
     {

@@ -6,8 +6,9 @@ using DataAccessLayer.Interfaces;
 using DataAccessLayer.Repositories;
 using DomainModels.Models;
 using Newtonsoft.Json.Linq;
+using Nutrition_FitnessApp.Services;
 
-namespace Cook_Book.UI
+namespace Nutrition_FitnessApp.UI
 {
     public partial class IngredientsForm : Form
     {

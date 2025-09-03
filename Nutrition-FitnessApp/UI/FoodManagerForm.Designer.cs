@@ -1,4 +1,4 @@
-﻿namespace Cook_Book.UI
+﻿namespace Nutrition_FitnessApp.UI
 {
     partial class FoodManagerForm
     {

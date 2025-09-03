@@ -13,7 +13,7 @@ using DataAccessLayer.Interfaces;
 using DomainModel.Models;
 using DomainModels.Models;
 
-namespace Cook_Book.UI
+namespace Nutrition_FitnessApp.UI
 {
     public partial class RecipeIngredientsForm : Form
     {

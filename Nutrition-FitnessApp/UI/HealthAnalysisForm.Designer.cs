@@ -1,4 +1,4 @@
-﻿namespace Cook_Book
+﻿namespace Nutrition_FitnessApp.UI
 {
     partial class HealthAnalysisForm
     {
@@ -50,7 +50,7 @@
             label3 = new Label();
             NutritionGrid = new DataGridView();
             ScrollPanel = new Panel();
-            themedTabControl = new Cook_Book.Services.ThemedTabControl();
+            themedTabControl = new Nutrition_FitnessApp.Services.ThemedTabControl();
             AIAdviceTab = new TabPage();
             AdviceTxt = new RichTextBox();
             GenerateAdviceBtn = new Button();

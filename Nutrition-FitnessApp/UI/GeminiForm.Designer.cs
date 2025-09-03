@@ -1,4 +1,4 @@
-﻿namespace Cook_Book.UI
+﻿namespace Nutrition_FitnessApp.UI
 {
     partial class GeminiForm
     {
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            themedTabControl1 = new Cook_Book.Services.ThemedTabControl();
+            themedTabControl1 = new Nutrition_FitnessApp.Services.ThemedTabControl();
             AIAdvicePage = new TabPage();
             AdviceRichTxt = new RichTextBox();
             groupBox1 = new GroupBox();
