@@ -116,7 +116,7 @@ namespace Cook_Book.UI
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.StartPosition = FormStartPosition.CenterScreen;
+            this.StartPosition = FormStartPosition.CenterParent;
             this.Text = "Gemini AI";
         }
 
